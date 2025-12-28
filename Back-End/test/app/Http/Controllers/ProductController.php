@@ -78,17 +78,40 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validate core fields first (don't validate `image` as string here to avoid
+            // issues when multipart data is parsed differently by PHP)
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'category_id' => 'required|exists:categories,id',
                 'price' => 'required|numeric',
                 'stock' => 'required|integer',
-                'image' => 'required|string',
+                'image_file' => 'nullable|image',
                 'description' => 'nullable|string',
                 'state' => 'nullable|string',
                 'is_featured' => 'nullable|boolean',
                 'old_price' => 'nullable|numeric',
             ]);
+
+            // Ensure we have either an image URL (string) or an uploaded file
+            $hasUrl = $request->filled('image') && is_string($request->input('image')) && $request->input('image') !== '';
+            $hasFile = $request->hasFile('image_file');
+            if (! $hasUrl && ! $hasFile) {
+                return response()->json([
+                    'message' => 'Les données fournies sont invalides.',
+                    'errors' => ['image' => ['Either image (URL) or image_file (upload) is required.']]
+                ], 422);
+            }
+
+            // If an uploaded file was provided, store it and set the image field
+            if ($hasFile) {
+                $file = $request->file('image_file');
+                $path = $file->store('products', 'public');
+                // store a publicly accessible full URL (uses APP_URL)
+                $validated['image'] = asset('storage/' . $path);
+            } elseif ($hasUrl) {
+                // use provided image URL as-is
+                $validated['image'] = $request->input('image');
+            }
 
             // Auto-generate slug if not provided
             if (!$request->has('slug')) {
@@ -113,7 +136,14 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        $product->update($request->all());
+        // allow updating via file upload as well
+        $data = $request->all();
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $path = $file->store('products', 'public');
+            $data['image'] = '/storage/' . $path;
+        }
+        $product->update($data);
         return response()->json($product);
     }
 

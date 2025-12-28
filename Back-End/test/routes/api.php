@@ -10,9 +10,12 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LocationController;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MagicLinkController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/auth/magic-link', [MagicLinkController::class, 'send']);
+Route::post('/auth/magic-verify', [MagicLinkController::class, 'verify']);
 
 Route::get('/locations', [LocationController::class, 'index']);
 
@@ -38,7 +41,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{id}', [ProductController::class, 'update']);
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-    
+
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);

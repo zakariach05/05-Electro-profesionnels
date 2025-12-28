@@ -35,11 +35,11 @@ class OrderController extends Controller
     private function calculateDeliveryEstimate($sellerCity, $customerCity, $prepDays, $deliveryType)
     {
         $shippingDays = 1;
-        
+
         if (strtolower($sellerCity) !== strtolower($customerCity)) {
             $shippingDays += 1;
         }
-        
+
         if ($deliveryType === 'standard') {
             $shippingDays += 1;
         }
@@ -76,7 +76,7 @@ class OrderController extends Controller
             $total += 100; // Add 100 DH delivery fee
 
             $secureToken = Str::random(64);
-            
+
             $order = Order::create([
                 'customer_name' => $validated['firstName'] . ' ' . $validated['lastName'],
                 'customer_email' => $validated['email'],
@@ -97,10 +97,14 @@ class OrderController extends Controller
             $sellerItems = [];
             foreach ($request->items as $itemData) {
                 $product = \App\Models\Product::with('seller')->find($itemData['id']);
-                $sellerId = $product->seller_id;
+                $sellerId = $product->seller_id ?? 1; // fallback to admin (1) if no seller set
+
+                // Ensure we always have a seller object with expected properties
+                $sellerObj = $product->seller ?? (object) ['city' => '', 'prep_days' => 0];
+
                 if (!isset($sellerItems[$sellerId])) {
                     $sellerItems[$sellerId] = [
-                        'seller' => $product->seller,
+                        'seller' => $sellerObj,
                         'items' => [],
                         'subtotal' => 0
                     ];
@@ -147,13 +151,13 @@ class OrderController extends Controller
             try {
                 // Send admin notification
                 Mail::to('chzakaria037@gmail.com')->send(new OrderAdminMail($order));
-                
+
                 // Send customer confirmation with invoice PDF
                 Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
-                
+
                 // Mark email as sent
                 $order->update(['email_sent' => true]);
-                
+
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error("Mail error: " . $e->getMessage());
             }
@@ -174,13 +178,13 @@ class OrderController extends Controller
     public function show(Request $request, $id)
     {
         $order = Order::with(['items.product', 'subOrders.seller', 'subOrders.items.product'])->findOrFail($id);
-        
+
         // Verify secure token if provided
         $token = $request->query('token');
         if ($token && $order->secure_token !== $token) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
-        
+
         return $order;
     }
 
@@ -243,18 +247,18 @@ class OrderController extends Controller
     {
         try {
             $order = Order::with(['items.product', 'subOrders.seller'])->findOrFail($id);
-            
+
             // Check if GD extension is available
             if (!extension_loaded('gd')) {
                 return view('emails.invoice', compact('order'));
             }
-            
+
             $pdf = Pdf::loadView('emails.invoice', compact('order'));
             return $pdf->stream("Facture_Electro05_{$order->id}.pdf");
-            
+
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Invoice view error: " . $e->getMessage());
-            
+
             try {
                 $order = Order::with(['items.product', 'subOrders.seller'])->findOrFail($id);
                 return view('emails.invoice', compact('order'));
@@ -268,18 +272,18 @@ class OrderController extends Controller
     {
         try {
             $order = Order::with(['items.product', 'subOrders.seller'])->findOrFail($id);
-            
+
             // Check if GD extension is available
             if (!extension_loaded('gd')) {
                 // Return HTML view instead of PDF
                 return view('emails.invoice', compact('order'));
             }
-            
+
             $pdf = Pdf::loadView('emails.invoice', compact('order'));
             return $pdf->download("Facture_Electro05_{$order->id}.pdf");
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Invoice generation error: " . $e->getMessage());
-            
+
             // Fallback to HTML view on any error
             try {
                 $order = Order::with(['items.product', 'subOrders.seller'])->findOrFail($id);
