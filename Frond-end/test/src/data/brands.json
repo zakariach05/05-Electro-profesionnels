@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Apple",
+        "logo": "Apple.png"
+    },
+    {
+        "name": "Samsung",
+        "logo": "samsung.png"
+    },
+    {
+        "name": "Sony",
+        "logo": "sony.png"
+    },
+    {
+        "name": "Dell",
+        "logo": "DELL.png"
+    },
+    {
+        "name": "HP",
+        "logo": "HP.png"
+    },
+    {
+        "name": "Asus",
+        "logo": "Asus.png"
+    },
+    {
+        "name": "LG",
+        "logo": "LG.png"
+    },
+    {
+        "name": "MSI",
+        "logo": "msi.png"
+    }
+]
