@@ -20,39 +20,42 @@ Elle permet :
 
 ```mermaid
 flowchart LR
-    A[🧑‍💻 Client<br/>React SPA]
-    B[⚙️ API REST<br/>Laravel]
-    C[🗄️ Base de Données<br/>MySQL]
+    Client[Client React SPA]
+    API[API REST Laravel]
+    DB[Database MySQL]
 
-    A <-->|JSON / HTTPS| B
-    B <-->|Eloquent ORM| C
+    Client <-->| JSON / HTTPS | API
+    API <-->| Eloquent ORM | DB
+
 
 sequenceDiagram
-    participant U as Utilisateur
-    participant R as React SPA
-    participant L as API Laravel
-    participant D as MySQL
+    participant User as Utilisateur
+    participant Front as Frontend React
+    participant Back as API Laravel
+    participant DB as MySQL
 
-    U->>R: Navigation / Action utilisateur
-    R->>L: Requête API (Axios)
-    L->>D: Lecture / Écriture données
-    D-->>L: Résultat
-    L-->>R: Réponse JSON
-    R-->>U: Mise à jour UI
+    User->>Front: Action utilisateur
+    Front->>Back: Requête HTTP (Axios)
+    Back->>DB: Lecture / écriture
+    DB-->>Back: Résultat
+    Back-->>Front: Réponse JSON
+    Front-->>User: Mise à jour UI
+
 
 sequenceDiagram
     participant C as Client
-    participant F as Frontend React
-    participant A as API Laravel
-    participant DB as MySQL
+    participant F as Frontend
+    participant A as API
+    participant D as Database
 
-    C->>F: Clique sur "Commander"
+    C->>F: Cliquer sur Commander
     F->>A: POST /api/orders
-    A->>DB: Vérifier stock
-    DB-->>A: Stock OK
-    A->>DB: Créer Order + OrderItems
-    A-->>F: 201 Commande validée
-    F-->>C: Confirmation + panier vidé
+    A->>D: Vérifier stock
+    D-->>A: Stock OK
+    A->>D: Créer commande
+    A-->>F: 201 Created
+    F-->>C: Confirmation commande
+
 
 
 
