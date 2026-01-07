@@ -1,9 +1,5 @@
-Parfait. Voici **un fichier `README.md` prêt pour GitHub**, **clair, professionnel, visuellement riche**, avec **icônes tech**, **animations (GIF / badges)**, **diagrammes Mermaid**, et une **explication fluide du fonctionnement du projet Electro-05**.
-Tu peux **copier-coller directement** ce code dans ton `README.md`.
 
----
 
-````md
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Electric%20plug/3D/electric_plug_3d.png" width="120"/>
