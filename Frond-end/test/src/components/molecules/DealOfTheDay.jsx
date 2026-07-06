@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 const DealOfTheDay = () => {
     const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });

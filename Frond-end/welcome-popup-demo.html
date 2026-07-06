@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup de Bienvenue - Electro 05</title>
+    <!-- Utilisation de la police moderne Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Variables CSS (Thèmes Clair & Sombre) ──────────── */
+        :root {
+            /* Couleurs de base - Thème clair */
+            --bg-body: #f1f5f9;
+            --bg-overlay: rgba(15, 23, 42, 0.4);
+            --bg-popup: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-legal: #94a3b8;
+            
+            /* Couleurs de la marque */
+            --brand-primary: #E52E1E; /* Rouge Electro 05 */
+            --brand-primary-hover: #cc2516;
+            --brand-success: #10b981;
+            
+            /* Bordures et ombres */
+            --border-color: #e2e8f0;
+            --popup-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Animations */
+            --transition-speed: 0.4s;
+            --transition-curve: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Thème sombre (activé selon la préférence du système) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #0f172a;
+                --bg-overlay: rgba(0, 0, 0, 0.6);
+                --bg-popup: #1e293b;
+                --text-primary: #f8fafc;
+                --text-secondary: #94a3b8;
+                --text-legal: #64748b;
+                
+                --border-color: #334155;
+                --popup-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        /* ─── Reset Sémantique ──────────── */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            /* Empêche le saut de page lors du blocage du scroll */
+            overflow-y: scroll; 
+        }
+
+        p {
+            line-height: 1.5;
+        }
+
+        /* Classes utilitaires pour le JS */
+        .no-scroll {
+            overflow: hidden;
+        }
+
+        /* ─── Arrière-plan (Overlay) ──────────── */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-overlay);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            
+            /* État fermé (caché) */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-speed) var(--transition-curve), 
+                        visibility var(--transition-speed) var(--transition-curve);
+        }
+
+        /* ─── Conteneur de la Popup ──────────── */
+        .popup-modal {
+            background-color: var(--bg-popup);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 28px;
+            padding: 2.5rem 2rem 2rem 2rem;
+            box-shadow: var(--popup-shadow);
+            border: 1px solid var(--border-color);
+            position: relative;
+            text-align: center;
+            
+            /* État fermé (animation) */
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all var(--transition-speed) var(--transition-curve);
+        }
+
+        /* Classes d'activation */
+        .popup-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-overlay.is-open .popup-modal {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* ─── Contenu de la Popup ──────────── */
+        
+        /* Bouton fermer (X) */
+        .popup-close-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .popup-close-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .popup-close-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Avatar Utilisateur */
+        .popup-avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .popup-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--bg-popup);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+
+        /* Badge de vérification vert */
+        .popup-verified-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background-color: var(--brand-success);
+            color: white;
+            border-radius: 50%;
+            padding: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--bg-popup);
+        }
+
+        /* Textes */
+        .popup-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .popup-email {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Bouton CTA "Continuer" */
+        .popup-cta {
+            width: 100%;
+            background-color: var(--text-primary);
+            color: var(--bg-body);
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 10px 20px -10px var(--text-primary);
+        }
+
+        .popup-cta:hover {
+            opacity: 0.9;
+        }
+
+        .popup-cta:active {
+            transform: scale(0.96);
+        }
+
+        .popup-cta-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .popup-cta:hover .popup-cta-icon {
+            transform: translateX(4px);
+        }
+
+        /* Texte Légal */
+        .popup-legal-text {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-legal);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .popup-legal-text strong {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Barre décorative (Brand line) */
+        .popup-brand-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--brand-primary), #ff4d3f, #3b82f6);
+        }
+
+        /* Bouton pour réinitialiser et tester la popup manuellement */
+        .demo-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-popup);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--popup-shadow);
+            border: 1px solid var(--border-color);
+            z-index: 10;
+        }
+        
+        .demo-controls button {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenu du site (simulation) -->
+    <main>
+        <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1rem;">Site Electro 05</h1>
+        <p style="font-size: 1.1rem; color: var(--text-secondary);">Attendez 1.5 seconde pour voir l'animation de la popup d'authentification.</p>
+    </main>
+
+    <!-- Contrôles de démonstration pour réinitialiser le localStorage -->
+    <div class="demo-controls">
+        <button onclick="WelcomePopup.resetAndShow()">Réinitialiser et afficher</button>
+    </div>
+
+    <!-- ─── SÉMANTIQUE HTML : STRUCTURE DE LA POPUP ──────────── -->
+    <!-- overlay avec role dialog pour l'accessibilité -->
+    <div id="welcome-overlay" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+        <div class="popup-modal">
+            
+            <!-- Bouton pour fermer -->
+            <button id="close-popup-btn" class="popup-close-btn" aria-label="Fermer la notification">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <!-- Profil utilisateur injecté par JS -->
+            <div class="popup-avatar-container">
+                <img id="user-avatar" class="popup-avatar" src="" alt="Avatar de l'utilisateur" />
+                <div class="popup-verified-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Textes dynamiques -->
+            <h2 id="popup-title" class="popup-title">Chargement...</h2>
+            <p id="popup-email" class="popup-email">...</p>
+
+            <!-- Bouton CTA -->
+            <button id="cta-popup-btn" class="popup-cta">
+                Continuer sur la boutique
+                <svg class="popup-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+
+            <!-- Mentions Légales -->
+            <p class="popup-legal-text">
+                En continuant, vous acceptez de recevoir nos meilleures offres High-Tech et les exclusivités <strong>Electro-05</strong> directement sur votre espace client.
+            </p>
+
+            <!-- Barre décorative marque -->
+            <div class="popup-brand-line"></div>
+        </div>
+    </div>
+
+    <!-- ─── JAVASCRIPT : GESTION STRUCTURÉE ──────────── -->
+    <script>
+        /**
+         * Données dynamiques de l'utilisateur. 
+         * Dans un cas réel, ces données proviendraient d'une API ou de l'Auth Context.
+         */
+        const currentUserData = {
+            name: "Zisco 05",
+            email: "zisco7039@gmail.com",
+            avatar: "https://ui-avatars.com/api/?name=Zisco+05&background=3b82f6&color=fff&size=200"
+        };
+
+        /**
+         * Composant WelcomePopup (Module Pattern)
+         * Encapsule toute la logique pour garder le code propre et éviter de polluer l'espace global.
+         */
+        const WelcomePopup = (function() {
+            // 1. Récupération des éléments du DOM
+            const overlay = document.getElementById('welcome-overlay');
+            const closeBtn = document.getElementById('close-popup-btn');
+            const ctaBtn = document.getElementById('cta-popup-btn');
+            const body = document.body;
+
+            // Élément de contenu dynamique
+            const uiAvatar = document.getElementById('user-avatar');
+            const uiTitle = document.getElementById('popup-title');
+            const uiEmail = document.getElementById('popup-email');
+
+            // --- Configuration ---
+            const LOCAL_STORAGE_KEY = 'welcome_popup_shown_v1';
+            const DELAY_MS = 1500; // 1.5 secondes
+
+            /**
+             * Injecte les données dynamiques dans le DOM
+             */
+            const renderData = () => {
+                uiAvatar.src = currentUserData.avatar;
+                uiTitle.textContent = `Bonjour, ${currentUserData.name} !`;
+                uiEmail.textContent = currentUserData.email;
+            };
+
+            /**
+             * Fonction d'Ouverture
+             * Bloque le scroll et déclenche l'animation d'ouverture
+             */
+            const open = () => {
+                // Remplir les données avant d'afficher
+                renderData();
+                
+                // Désactiver le scroll arrière-plan
+                body.classList.add('no-scroll');
+                
+                // Activer les classes CSS d'animation
+                overlay.classList.add('is-open');
+                
+                // Enregistrer dans le localStorage pour ne l'afficher qu'une fois
+                localStorage.setItem(LOCAL_STORAGE_KEY, 'true');
+            };
+
+            /**
+             * Fonction de Fermeture
+             * Réactive le scroll et déclenche l'animation de fermeture
+             */
+            const close = () => {
+                // Retirer la classe CSS pour déclencher la transition sortante
+                overlay.classList.remove('is-open');
+                
+                // Attendre la fin de l'animation pour réactiver le scroll (0.4s = temps CSS)
+                setTimeout(() => {
+                    body.classList.remove('no-scroll');
+                }, 400);
+            };
+
+            /**
+             * Initialisation des écouteurs d'événements (Event Listeners)
+             */
+            const initEvents = () => {
+                // Clic sur l'icône X
+                closeBtn.addEventListener('click', close);
+                
+                // Clic sur le bouton d'action principal CTA
+                ctaBtn.addEventListener('click', () => {
+                    close();
+                    // Redirection ou autre action ici :
+                    console.log('Action : Utilisateur redirigé vers la boutique.');
+                });
+
+                // Clic à l'extérieur de la popup (sur l'overlay)
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) close();
+                });
+
+                // Fermeture avec la touche Échap pour l'accessibilité
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && overlay.classList.contains('is-open')) {
+                        close();
+                    }
+                });
+            };
+
+            /**
+             * Démarrage automatique du système avec les vérifications requises
+             */
+            const autoStart = () => {
+                const hasBeenShown = localStorage.getItem(LOCAL_STORAGE_KEY);
+                
+                // Vérifier si elle a déjà été affichée
+                if (!hasBeenShown) {
+                    setTimeout(() => {
+                        open();
+                    }, DELAY_MS);
+                }
+            };
+
+            /**
+             * Méthode Setup principale
+             */
+            const init = () => {
+                initEvents();
+                autoStart();
+            };
+
+            // Exposer certaines méthodes publiquement pour pouvoir forcer l'affichage (ex: Mode Démo)
+            return {
+                init,
+                open,
+                close,
+                resetAndShow: () => {
+                    localStorage.removeItem(LOCAL_STORAGE_KEY);
+                    location.reload(); // recharge la page pour la démonstration
+                }
+            };
+        })();
+
+        // ─── Démarrage au chargement de la page ────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            WelcomePopup.init();
+        });
+    </script>
+
+</body>
+</html>

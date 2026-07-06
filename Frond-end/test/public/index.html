@@ -1,44 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" dir="ltr">
 
 <head>
-  <link rel="icon" href="LogoHead.png">
   <meta charset="utf-8" />
-  <!-- <link rel="icon" href="%PUBLIC_URL%/favicon.ico" /> -->
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-react-app" />
-  <!-- <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" /> -->
-  <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-  <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-  <title>05 Electro | Produits Electroniques</title>
+  <!-- ── Favicon & Theme ──────────────────────────────────────────────────── -->
+  <link rel="icon" href="logo-nv.png" />
+  <link rel="apple-touch-icon" href="logo-nv.png" />
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#544F7D" media="(prefers-color-scheme: light)" />
+
+  <!-- ── SEO Base ─────────────────────────────────────────────────────────── -->
+  <title>Electro-05 — Électronique Professionnelle en maroc</title>
+  <meta name="description"
+    content="Découvrez Electro-05 : la référence en appareils électroniques professionnels en maroc. Ordinateurs, smartphones, TV, accessoires — Livraison rapide, prix compétitifs." />
+  <meta name="keywords"
+    content="électronique, algérie, ordinateur, smartphone, TV, accessoire, electro professionnels" />
+  <meta name="author" content="Electro-05" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://05-electro.kesug.com/" />
+
+  <!-- ── Open Graph ────────────────────────────────────────────────────────── -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Electro-05" />
+  <meta property="og:title" content="Electro-05 — Électronique Professionnelle en Algérie" />
+  <meta property="og:description"
+    content="Découvrez notre gamme d'appareils électroniques professionnels. Livraison rapide partout en Algérie." />
+  <meta property="og:url" content="https://05-electro.kesug.com/" />
+  <meta property="og:image" content="https://05-electro.kesug.com/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="fr_DZ" />
+
+  <!-- ── Twitter Cards ─────────────────────────────────────────────────────── -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@electro05dz" />
+  <meta name="twitter:title" content="Electro-05 — Électronique Professionnelle" />
+  <meta name="twitter:description" content="La référence en électronique professionnelle en Algérie." />
+  <meta name="twitter:image" content="https://05-electro.kesug.com/og-default.jpg" />
+
+  <!-- ── Mobile SEO ───────────────────────────────────────────────────────── -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Electro-05" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- ── Performance ──────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://accounts.google.com" />
+
+  <!-- ── PWA Manifest ─────────────────────────────────────────────────────── -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+
+  <!-- ── JSON-LD: WebSite Schema ──────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Electro-05",
+    "url": "https://05-electro.kesug.com",
+    "description": "La référence en appareils électroniques professionnels en Algérie",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://05-electro.kesug.com/shop?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- ── JSON-LD: Organization ────────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Electro-05",
+    "url": "https://05-electro.kesug.com",
+    "logo": "https://05-electro.kesug.com/logo-nv.png",
+    "sameAs": [],
+    "contactPoint": [{
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": ["French", "Arabic"]
+    }]
+  }
+  </script>
 </head>
 
 <body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <noscript>
+    <div style="padding:20px;text-align:center;font-family:sans-serif;">
+      Vous devez activer JavaScript pour utiliser Electro-05.
+    </div>
+  </noscript>
   <div id="root"></div>
-  <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
 </body>
 
 </html>

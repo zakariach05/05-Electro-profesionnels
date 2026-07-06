@@ -22,7 +22,7 @@ const Footer = () => {
                         <Link to="/" className="inline-flex items-center gap-2 group">
                             {!logoError ? (
                                 <img
-                                    src="/Logo.png"
+                                    src="/logo-nv.png"
                                     alt={t('hero.title')}
                                     className="h-8 md:h-10 lg:h-12 w-auto"
                                     onError={() => setLogoError(true)}
@@ -38,25 +38,25 @@ const Footer = () => {
                         </p>
                         <div className="flex gap-4 pt-2">
                             {[Facebook, Instagram, Twitter, Youtube].map((Icon, idx) => (
-                                <a key={idx} href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-premium-gradient hover:text-white transition-all duration-300 hover:-translate-y-1">
+                                <button key={idx} type="button" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-premium-gradient hover:text-white transition-all duration-300 hover:-translate-y-1">
                                     <Icon size={18} />
-                                </a>
+                                </button>
                             ))}
                         </div>
                     </div>
 
                     {/* Quick Links */}
                     <div className="lg:col-span-2 lg:col-start-6 space-y-6 flex flex-col items-center lg:items-start text-center lg:text-left">
-                        <h4 className="text-lg font-bold text-white uppercase tracking-tight">Navigation</h4>
+                        <h4 className="text-lg font-bold text-white uppercase tracking-tight">{t('footer.navigation')}</h4>
                         <ul className="space-y-3 w-full">
                             {[
-                                { name: 'Accueil', path: '/' },
-                                { name: 'Boutique', path: '/shop' },
-                                { name: 'Nouveautés', path: '/shop' },
-                                { name: 'Promotions', path: '/promotions' },
-                                { name: 'Contact', path: '/contact' }
+                                { key: 'home', name: t('nav.home'), path: '/' },
+                                { key: 'shop', name: t('nav.shop'), path: '/shop' },
+                                { key: 'new', name: t('nav.shop'), path: '/shop' },
+                                { key: 'promo', name: t('nav.promotions'), path: '/promotions' },
+                                { key: 'contact', name: t('nav.contact'), path: '/contact' }
                             ].map((item) => (
-                                <li key={item.name}>
+                                <li key={item.key}>
                                     <Link to={item.path} className="text-gray-400 hover:text-secondary transition-colors text-sm hover:translate-x-1 inline-block">
                                         {item.name}
                                     </Link>
@@ -67,16 +67,16 @@ const Footer = () => {
 
                     {/* Customer Service */}
                     <div className="lg:col-span-2 space-y-6 flex flex-col items-center lg:items-start text-center lg:text-left">
-                        <h4 className="text-lg font-bold text-white uppercase tracking-tight">Client</h4>
+                        <h4 className="text-lg font-bold text-white uppercase tracking-tight">{t('footer.services')}</h4>
                         <ul className="space-y-3 w-full">
                             {[
-                                { name: 'Mon Compte', path: '/' },
-                                { name: 'Suivre ma commande', path: '/order-tracking' },
-                                { name: 'FAQ', path: '/faq' },
-                                { name: 'Politique de retour', path: '/retours' },
-                                { name: 'Conditions générales', path: '/conditions' }
+                                { key: 'account', name: t('footer.my_account'), path: '/' },
+                                { key: 'track', name: t('footer.track_order'), path: '/order-tracking' },
+                                { key: 'faq', name: t('footer.faq'), path: '/faq' },
+                                { key: 'returns', name: t('footer.return_policy'), path: '/retours' },
+                                { key: 'terms', name: t('footer.terms'), path: '/conditions' }
                             ].map((item) => (
-                                <li key={item.name}>
+                                <li key={item.key}>
                                     <Link to={item.path} className="text-gray-400 hover:text-secondary transition-colors text-sm hover:translate-x-1 inline-block">
                                         {item.name}
                                     </Link>
@@ -87,7 +87,7 @@ const Footer = () => {
 
                     {/* Contact Info */}
                     <div className="lg:col-span-3 space-y-6 flex flex-col items-center lg:items-start text-center lg:text-left">
-                        <h4 className="text-lg font-bold text-white uppercase tracking-tight">Contact</h4>
+                        <h4 className="text-lg font-bold text-white uppercase tracking-tight">{t('footer.contact')}</h4>
                         <ul className="space-y-4 w-full">
                             <li className="flex flex-col lg:flex-row items-center lg:items-start gap-2 lg:gap-3 text-gray-400 text-sm">
                                 <MapPin className="flex-shrink-0 text-primary" size={18} />
@@ -99,7 +99,7 @@ const Footer = () => {
                             </li>
                             <li className="flex flex-col lg:flex-row items-center lg:items-start gap-2 lg:gap-3 text-gray-400 text-sm">
                                 <Mail className="flex-shrink-0 text-primary" size={18} />
-                                <span>chzakaria037@gmail.com</span>
+                                <span>zisco7039@gmail.com</span>
                             </li>
                         </ul>
                     </div>
@@ -109,7 +109,7 @@ const Footer = () => {
                 <div className="flex flex-col items-center gap-6">
                     <div className="flex items-center gap-4">
                         <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+                            src={getImageUrl('marque/visa.png')}
                             alt="Visa"
                             className="h-6 md:h-8 w-auto object-contain bg-white rounded-md p-1"
                         />
@@ -119,9 +119,9 @@ const Footer = () => {
                             className="h-6 md:h-8 w-auto object-contain bg-white rounded-md p-1"
                         />
                         <img
-                            src={getImageUrl('cmi.png')}
+                            src={getImageUrl('marque/cmi.jpeg')}
                             alt="CMI Paiement"
-                            className="h-8 md:h-10 w-auto object-contain bg-white rounded-md p-1"
+                            className="h-6 md:h-8 w-auto object-contain bg-white rounded-md p-1"
                         />
                     </div>
                     <p className="text-gray-500 text-sm">

@@ -180,7 +180,7 @@ const FilterSidebar = ({ filters, setFilters, closeMobileFilters }) => {
 
             <button
                 className="w-full mt-6 py-2 px-4 border border-gray-200 text-gray-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                onClick={() => setFilters({ maxPrice: 30000, brands: [], states: [], promoOnly: false, inStock: false })}
+                onClick={() => setFilters({ maxPrice: 30000, brands: [], states: [], categories: [], promoOnly: false, inStock: false })}
             >
                 Réinitialiser tout
             </button>

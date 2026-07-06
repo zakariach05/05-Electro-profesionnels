@@ -9,7 +9,8 @@ export function getImageUrl(image) {
     // relative path starting with / -> prefix with API base
     if (image.startsWith('/')) return API_BASE + image;
     // storage paths like storage/..., products/...
-    return API_BASE + '/storage/' + image.replace(/^\/+/, '');
+    const path = image.replace(/^\/+/, '');
+    return API_BASE + '/storage/' + encodeURI(path);
 }
 
 export default getImageUrl;

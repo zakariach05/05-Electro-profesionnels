@@ -9,7 +9,7 @@ import { getImageUrl } from '../../services/image';
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
     const { toggleCompare, compareItems } = useCompare();
-    const { toggleWishlist, isInWishlist } = useWishlist();
+    const { toggle, isInWishlist } = useWishlist();
     const [isHovered, setIsHovered] = useState(false);
 
     const isComparing = compareItems.find(item => item.id === product.id);
@@ -77,7 +77,7 @@ const ProductCard = ({ product }) => {
                     </div>
                 </div>
 
-                    <Link to={`/product/${product.id}`} className="block">
+                <Link to={`/product/${product.id}`} className="block">
                     <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 hover:text-primary transition-colors h-10 leading-tight">
                         {product.name}
                     </h3>
@@ -91,7 +91,7 @@ const ProductCard = ({ product }) => {
                         )}
                     </div>
                     <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product); }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(product); }}
                         className={`p-2 transition-colors ${inWishlist ? 'text-red-500' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'}`}
                     >
                         <Heart size={20} fill={inWishlist ? "currentColor" : "none"} />

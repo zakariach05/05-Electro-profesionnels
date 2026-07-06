@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingBag, Search, User, Menu, X, Globe, Heart, Moon, Sun, ChevronDown, Percent, Mail, Home, Smartphone, Laptop, Gamepad2, Headphones, Watch, Tablet, Tv, Speaker, Camera, Zap, LifeBuoy, Package, HelpCircle, RefreshCcw, Gavel } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, X, Moon, Sun, ChevronDown, Percent, Mail, Zap, LifeBuoy, Package, HelpCircle, RefreshCcw, Gavel } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import md5 from 'js-md5';
 import { CATEGORIES } from '../../data/categories';
@@ -7,17 +7,171 @@ import BRANDS from '../../data/brands.json';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
-import { useWishlist } from '../../context/WishlistContext';
 import { useTheme } from '../../context/ThemeContext';
-import gsap from 'gsap';
+import LanguageSelector from '../../components/molecules/LanguageSelector';
+
+const getAvatarUrl = (user) => {
+    if (user?.avatar) return user.avatar;
+    if (!user?.email) {
+        const name = encodeURIComponent((user?.name || 'U').replace(/\s+/g, '+'));
+        return `https://ui-avatars.com/api/?name=${name}&background=E52E1E&color=fff&size=128&bold=true`;
+    }
+    const emailHash = md5(user.email.toLowerCase().trim());
+    return `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=128`;
+};
+
+// ─── Announcement Bar Messages ───────────────────────────────────────────────
+const MESSAGES = [
+    { icon: '⚡', text: 'LIVRAISON GRATUITE PARTOUT AU MAROC À PARTIR DE 2000 DH', color: '#FFCB50' },
+    { icon: '🎁', text: 'JUSQU\'À -35% SUR LES SMARTPHONES & PC — PROMO 2026', color: '#a78bfa' },
+    { icon: '🔒', text: 'PAIEMENT SÉCURISÉ · GARANTIE OFFICIELLE · SAV PREMIUM', color: '#34d399' },
+    { icon: '🚀', text: 'LIVRAISON EXPRESS 24H DISPONIBLE SUR CASABLANCA', color: '#fb923c' },
+];
+
+const AnnouncementBar = ({ isScrolled }) => {
+    const [current, setCurrent] = useState(0);
+    const [flipping, setFlipping] = useState(false);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFlipping(true);
+            setTimeout(() => {
+                setCurrent(prev => (prev + 1) % MESSAGES.length);
+                setFlipping(false);
+            }, 450);
+        }, 3800);
+        return () => clearInterval(interval);
+    }, []);
+
+    const msg = MESSAGES[current];
+
+    return (
+        <div
+            style={{
+                width: '100%',
+                background: 'linear-gradient(90deg, #0a0a0f 0%, #111827 40%, #0f0f1a 100%)',
+                overflow: 'hidden',
+                position: 'relative',
+                zIndex: 70,
+                transition: 'height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease',
+                height: isScrolled ? 0 : 36,
+                opacity: isScrolled ? 0 : 1,
+            }}
+        >
+            <style>{`
+                @keyframes bar3d-in {
+                    0%   { opacity: 0; transform: perspective(600px) rotateX(-90deg) translateY(-8px); }
+                    100% { opacity: 1; transform: perspective(600px) rotateX(0deg)   translateY(0px); }
+                }
+                @keyframes bar3d-out {
+                    0%   { opacity: 1; transform: perspective(600px) rotateX(0deg)  translateY(0px); }
+                    100% { opacity: 0; transform: perspective(600px) rotateX(90deg) translateY(8px); }
+                }
+                @keyframes bar-shimmer {
+                    0%   { transform: translateX(-120%) skewX(-20deg); }
+                    100% { transform: translateX(120%)  skewX(-20deg); }
+                }
+                @keyframes bar-dot-pulse {
+                    0%, 100% { transform: scale(1);   opacity: 1; }
+                    50%       { transform: scale(1.8); opacity: 0.5; }
+                }
+                @keyframes bar-particle {
+                    0%   { transform: translateY(0px) scale(1);   opacity: 0.5; }
+                    50%  { transform: translateY(-6px) scale(1.3); opacity: 1; }
+                    100% { transform: translateY(0px) scale(1);   opacity: 0.5; }
+                }
+                .bar3d-enter { animation: bar3d-in  0.45s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+                .bar3d-exit  { animation: bar3d-out 0.45s cubic-bezier(0.4,0,0.2,1)      forwards; }
+            `}</style>
+
+            {/* Shimmer sweep */}
+            <div style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden',
+            }}>
+                <div style={{
+                    position: 'absolute', top: 0, left: 0, width: '40%', height: '100%',
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)',
+                    animation: 'bar-shimmer 3s ease-in-out infinite',
+                }} />
+            </div>
+
+            {/* Floating particles */}
+            {[10, 25, 50, 75, 90].map((left, i) => (
+                <div key={i} style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: `${left}%`,
+                    width: 3, height: 3,
+                    borderRadius: '50%',
+                    background: msg.color,
+                    opacity: 0.4,
+                    transform: 'translateY(-50%)',
+                    animation: `bar-particle ${1.8 + i * 0.4}s ease-in-out infinite`,
+                    animationDelay: `${i * 0.3}s`,
+                    transition: 'background 0.6s ease',
+                }} />
+            ))}
+
+            {/* Content */}
+            <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                height: '100%', gap: 10, padding: '0 16px',
+                transformStyle: 'preserve-3d',
+            }}>
+                {/* Live dot */}
+                <div style={{
+                    width: 7, height: 7, borderRadius: '50%',
+                    background: msg.color,
+                    animation: 'bar-dot-pulse 1.4s ease-in-out infinite',
+                    flexShrink: 0,
+                    transition: 'background 0.5s ease',
+                    boxShadow: `0 0 8px ${msg.color}`,
+                }} />
+
+                {/* 3D flipping message */}
+                <div
+                    key={current}
+                    className={flipping ? 'bar3d-exit' : 'bar3d-enter'}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        color: '#fff',
+                        fontSize: 11,
+                        fontWeight: 800,
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase',
+                        textShadow: `0 0 16px ${msg.color}55`,
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    <span style={{ fontSize: 13 }}>{msg.icon}</span>
+                    <span style={{ color: msg.color, transition: 'color 0.4s' }}>{msg.text}</span>
+                </div>
+
+                {/* Indicator dots */}
+                <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                    {MESSAGES.map((_, i) => (
+                        <div key={i} style={{
+                            width: i === current ? 14 : 4,
+                            height: 4,
+                            borderRadius: 4,
+                            background: i === current ? msg.color : 'rgba(255,255,255,0.2)',
+                            transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+                            boxShadow: i === current ? `0 0 6px ${msg.color}` : 'none',
+                        }} />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const Header = () => {
+
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null); // 'boutique' | 'marques' | null
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isLangOpen, setIsLangOpen] = useState(false);
     const [logoError, setLogoError] = useState(false);
 
     const location = useLocation();
@@ -25,16 +179,9 @@ const Header = () => {
     const dropdownRef = useRef(null);
 
     const { cartCount, setIsCartOpen } = useCart();
-    const { language, setLanguage, t } = useLanguage();
+    const { t } = useLanguage();
     const { user, logout, isAdmin } = useAuth();
-    const { wishlistItems } = useWishlist();
     const { theme, toggleTheme } = useTheme();
-
-    const languages = [
-        { code: 'fr', label: 'Français', flag: '🇫🇷' },
-        { code: 'en', label: 'English', flag: '🇬🇧' },
-        { code: 'ar', label: 'العربية', flag: '🇲🇦' }
-    ];
 
     useEffect(() => {
         const handleScroll = () => {
@@ -48,7 +195,6 @@ const Header = () => {
         setIsMobileMenuOpen(false);
         setActiveDropdown(null);
         setIsSearchOpen(false);
-        setIsLangOpen(false);
     }, [location]);
 
     // Close dropdown on click outside
@@ -72,13 +218,8 @@ const Header = () => {
 
     return (
         <>
-            {/* Announcement Bar - Premium Dark style */}
-            <div className={`w-full bg-gray-950 text-white text-[11px] font-bold py-2 px-4 transition-all duration-300 overflow-hidden ${isScrolled ? 'h-0 opacity-0' : 'h-8 opacity-100'} flex items-center justify-center z-[70] relative`}>
-                <div className="flex items-center gap-2 animate-pulse">
-                    <Zap size={12} className="text-yellow-400" />
-                    <span className="tracking-wider uppercase">Livraison Gratuite partout au Maroc à partir de 2000 DH</span>
-                </div>
-            </div>
+            {/* Announcement Bar - 3D Animated */}
+            <AnnouncementBar isScrolled={isScrolled} />
 
             <header
                 className={`fixed ${isScrolled ? 'top-0' : 'top-8'} left-0 w-full z-50 transition-all duration-500 ${isScrolled
@@ -86,22 +227,24 @@ const Header = () => {
                     : 'bg-white dark:bg-black border-transparent'
                     }`}
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center h-20">
+                <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                    <div className="flex items-center h-24 gap-4">
 
-                        {/* 1. Logo Left */}
-                        <div className="flex items-center">
+                        {/* 1. Logo Left — always shrink-0 so it NEVER compresses */}
+                        <div className="flex items-center shrink-0 -ml-4 sm:-ml-6 lg:-ml-8">
                             <Link to="/" className="flex items-center gap-2 group transition-transform hover:scale-105 active:scale-95">
-                                <div className="relative">
+                                {/* shrink-0 + explicit min-width ensure the image is NEVER compressed by flex siblings */}
+                                <div className="relative shrink-0">
                                     {!logoError ? (
                                         <img
-                                            src="/Logo.png"
+                                            src="/logo-nv.png"
                                             alt="Electro-05"
-                                            className="h-10 md:h-12 w-auto object-contain"
+                                            className="h-10 md:h-14 w-auto object-contain shrink-0"
+                                            style={{ minWidth: 'max-content' }}
                                             onError={() => setLogoError(true)}
                                         />
                                     ) : (
-                                        <span className="text-xl font-black bg-premium-gradient bg-clip-text text-transparent">
+                                        <span className="text-xl font-black bg-premium-gradient bg-clip-text text-transparent whitespace-nowrap">
                                             05 ELECTRO
                                         </span>
                                     )}
@@ -110,8 +253,8 @@ const Header = () => {
                             </Link>
                         </div>
 
-                        {/* 2. Navigation Links Center */}
-                        <nav className="hidden lg:flex items-center gap-1 xl:gap-3 ml-8 xl:ml-12">
+                        {/* 2. Navigation Links Center — grows naturally, min-w-0 prevents overflow into adjacent zones */}
+                        <nav className="hidden lg:flex items-center gap-1 xl:gap-3 min-w-0 ml-4 xl:ml-8">
                             {!user && (
                                 <Link
                                     to="/"
@@ -218,8 +361,8 @@ const Header = () => {
                             </Link>
                         </nav>
 
-                        {/* 3. Right Icons */}
-                        <div className="flex items-center gap-1 md:gap-3 lg:gap-4 ml-auto lg:ml-12">
+                        {/* 3. Right Icons — ml-auto pushes the whole zone to the far right, shrink-0 locks its size */}
+                        <div className="flex items-center gap-1 md:gap-2 lg:gap-3 ml-auto shrink-0 -mr-4 sm:-mr-6 lg:-mr-8">
 
                             {/* Theme Toggle */}
                             <button
@@ -238,39 +381,8 @@ const Header = () => {
                                 <Search size={20} />
                             </button>
 
-                            {/* Language */}
-                            <div className="relative group">
-                                <button
-                                    onClick={() => setIsLangOpen(!isLangOpen)}
-                                    className="hidden sm:flex items-center gap-1.5 p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-300 transition-all uppercase text-[10px] font-black tracking-widest"
-                                >
-                                    <Globe size={18} />
-                                    {language}
-                                </button>
-                                {isLangOpen && (
-                                    <div className="absolute top-full right-0 mt-2 w-32 bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border border-gray-100 dark:border-white/10 p-2 z-[60] animate-fade-in">
-                                        {languages.map((lang) => (
-                                            <button
-                                                key={lang.code}
-                                                onClick={() => setLanguage(lang.code)}
-                                                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${language === lang.code ? 'bg-primary text-white' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-200'}`}
-                                            >
-                                                {lang.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Wishlist */}
-                            <Link to="/wishlist" className="relative p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-90 ring-inset focus:ring-1 focus:ring-red-400">
-                                <Heart size={20} />
-                                {wishlistItems.length > 0 && (
-                                    <span className="absolute top-[6px] right-[6px] bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900 animate-in zoom-in duration-300">
-                                        {wishlistItems.length}
-                                    </span>
-                                )}
-                            </Link>
+                            {/* Language Selector */}
+                            <LanguageSelector />
 
                             {/* Cart */}
                             <button
@@ -294,8 +406,13 @@ const Header = () => {
                                             onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/account')}
                                         >
                                             <span className="text-xs font-bold text-gray-700 dark:text-gray-200 hidden xl:block">{user.name.split(' ')[0]}</span>
-                                            <div className="w-8 h-8 rounded-full overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
-                                                <img src={`https://www.gravatar.com/avatar/${md5(user.email.toLowerCase().trim())}?d=mp`} alt={user.name} className="w-full h-full object-cover" />
+                                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 flex-shrink-0">
+                                                <img 
+                                                    src={getAvatarUrl(user)} 
+                                                    alt={user.name} 
+                                                    className="w-full h-full object-cover" 
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||'U')}&background=E52E1E&color=fff&size=128&bold=true`; }}
+                                                />
                                             </div>
                                         </button>
 
@@ -436,11 +553,18 @@ const Header = () => {
                                 <Link to="/conditions" className="block text-sm font-bold text-gray-600 dark:text-gray-400">Conditions générales</Link>
                             </div>
 
+                            <LanguageSelector isMobile />{/* Language switcher in mobile */}
+
                             {user ? (
                                 <div className="pt-6 mt-6 border-t border-gray-50 dark:border-white/5">
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-black text-xl">
-                                            {user.name.charAt(0)}
+                                        <div className="w-12 h-12 rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-sm flex-shrink-0">
+                                            <img 
+                                                src={getAvatarUrl(user)} 
+                                                alt={user.name} 
+                                                className="w-full h-full object-cover" 
+                                                onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name||'U')}&background=E52E1E&color=fff&size=128&bold=true`; }}
+                                            />
                                         </div>
                                         <div>
                                             <p className="font-black text-gray-900 dark:text-white leading-none">{user.name}</p>

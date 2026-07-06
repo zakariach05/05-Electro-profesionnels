@@ -134,10 +134,15 @@ const Support = () => {
                                 <p className="text-gray-400 font-medium mb-8 max-w-md">
                                     Besoin de voir un appareil en vidéo avant l'achat ? Nos experts peuvent vous envoyer une vidéo personnalisée du produit via WhatsApp.
                                 </p>
-                                <button className="flex items-center gap-3 bg-green-500 hover:bg-green-600 transition-all text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 shadow-lg shadow-green-500/20">
+                                <a 
+                                    href="https://wa.me/212704685662" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 transition-all text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 shadow-lg shadow-green-500/20"
+                                >
                                     Contact WhatsApp
                                     <ExternalLink size={18} />
-                                </button>
+                                </a>
                             </div>
                             <div className="absolute top-1/2 right-0 -translate-y-1/2 opacity-10 hidden md:block">
                                 <MessageSquare size={200} />
@@ -193,7 +198,7 @@ const Support = () => {
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase leading-none">Email Support</p>
-                                        <p className="text-sm font-black text-gray-700 dark:text-gray-200 mt-1 cursor-pointer hover:text-primary">chzakaria037@gmail.com</p>
+                                        <p className="text-sm font-black text-gray-700 dark:text-gray-200 mt-1 cursor-pointer hover:text-primary">zisco7039@gmail.com</p>
                                     </div>
                                 </div>
                             </div>

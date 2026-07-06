@@ -44,20 +44,9 @@ const SplashScreen = ({ onComplete }) => {
                 <source src="/Magasine05.mp4" type="video/mp4" />
             </video>
 
-            {/* Overlay gradient for better logo visibility */}
-            <div className={`absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50 transition-all duration-1000 ${zoomIn ? 'bg-black/70' : ''
-                }`}></div>
 
-            {/* Logo with Zoom Animation */}
-            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-1000 ${zoomIn ? 'scale-125' : 'scale-100'
-                }`}>
-                <img
-                    src="/Logo.png"
-                    alt="Electro-05"
-                    className="h-24 md:h-32 w-auto object-contain animate-pulse"
-                    style={{ filter: 'brightness(2) drop-shadow(0 0 20px rgba(255,255,255,0.5))' }}
-                />
-            </div>
+
+
 
             {/* Loading indicator */}
             <div className={`absolute bottom-12 left-1/2 -translate-x-1/2 transition-opacity duration-500 ${zoomIn ? 'opacity-0' : 'opacity-100'

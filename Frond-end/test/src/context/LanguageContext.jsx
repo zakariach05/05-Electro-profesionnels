@@ -1,34 +1,28 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import fr from '../locales/fr.json';
-import en from '../locales/en.json';
-import ar from '../locales/ar.json';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 const LanguageContext = createContext();
 
-const translations = { fr, en, ar };
-
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState(localStorage.getItem('lang') || 'fr');
+    const [language, setLanguageState] = useState(i18n.language);
+    const { t: i18nT } = useTranslation();
 
     useEffect(() => {
-        localStorage.setItem('lang', language);
-        document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = language;
-    }, [language]);
+        const handleLanguageChanged = (lng) => {
+            setLanguageState(lng);
+        };
+        i18n.on('languageChanged', handleLanguageChanged);
+        return () => i18n.off('languageChanged', handleLanguageChanged);
+    }, []);
 
-    const t = (key) => {
-        const keys = key.split('.');
-        let value = translations[language];
+    const setLanguage = useCallback((lng) => {
+        i18n.changeLanguage(lng);
+    }, []);
 
-        for (const k of keys) {
-            if (value[k]) {
-                value = value[k];
-            } else {
-                return key; // Return key if translation not found
-            }
-        }
-        return value;
-    };
+    const t = useCallback((key, options) => {
+        return i18nT(key, options);
+    }, [i18nT]);
 
     return (
         <LanguageContext.Provider value={{ language, setLanguage, t }}>

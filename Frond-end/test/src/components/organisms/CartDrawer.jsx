@@ -43,7 +43,7 @@ const CartDrawer = () => {
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl transform translate-x-full flex flex-col"
+                className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl transform translate-x-full flex flex-col cart-drawer"
             >
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">

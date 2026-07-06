@@ -1,34 +1,19 @@
 [
-    {
-        "name": "Apple",
-        "logo": "Apple.png"
-    },
-    {
-        "name": "Samsung",
-        "logo": "samsung.png"
-    },
-    {
-        "name": "Sony",
-        "logo": "sony.png"
-    },
-    {
-        "name": "Dell",
-        "logo": "DELL.png"
-    },
-    {
-        "name": "HP",
-        "logo": "HP.png"
-    },
-    {
-        "name": "Asus",
-        "logo": "Asus.png"
-    },
-    {
-        "name": "LG",
-        "logo": "LG.png"
-    },
-    {
-        "name": "MSI",
-        "logo": "msi.png"
-    }
+    { "name": "Apple",      "logo": "marque/apple.png",      "color": "#555555", "bg": "#F5F5F7" },
+    { "name": "Samsung",    "logo": "marque/samsung.png",    "color": "#1428A0", "bg": "#EEF2FF" },
+    { "name": "Sony",       "logo": "marque/sony.png",       "color": "#111111", "bg": "#F0F0F0" },
+    { "name": "Dell",       "logo": "marque/deel.png",       "color": "#007DB8", "bg": "#E8F4FB" },
+    { "name": "HP",         "logo": "marque/hp.png",         "color": "#0096D6", "bg": "#E5F5FB" },
+    { "name": "Asus",       "logo": "marque/asus.png",       "color": "#111111", "bg": "#F0F0F0" },
+    { "name": "LG",         "logo": "marque/lg.png",         "color": "#A50034", "bg": "#FDF0F3" },
+    { "name": "Lenovo",     "logo": "marque/lenovo.png",     "color": "#FFFFFF", "bg": "#E50012" },
+    { "name": "Xiaomi",     "logo": "marque/xiaomi.png",     "color": "#FFFFFF", "bg": "#FF6900" },
+    { "name": "Acer",       "logo": "marque/acer.png",       "color": "#FFFFFF", "bg": "#009845" },
+    { "name": "Huawei",     "logo": "marque/huawei.png",     "color": "#FFFFFF", "bg": "#CF0A2C" },
+    { "name": "Intel",      "logo": "marque/intel.png",      "color": "#FFFFFF", "bg": "#0071C5" },
+    { "name": "AMD",        "logo": "marque/amd-ryzen.png",  "color": "#FFFFFF", "bg": "#ED1C24" },
+    { "name": "NVIDIA",     "logo": "marque/nvidia.png",     "color": "#FFFFFF", "bg": "#76B900" },
+    { "name": "Microsoft",  "logo": "marque/miscosoft.png",  "color": "#FFFFFF", "bg": "#00A4EF" },
+    { "name": "Logitech",   "logo": "marque/logitiech.png",  "color": "#FFFFFF", "bg": "#00B5E2" },
+    { "name": "Oppo",       "logo": "marque/oppo.png",       "color": "#FFFFFF", "bg": "#1D8348" }
 ]

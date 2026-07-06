@@ -1,0 +1,299 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-restart: &default-restart
+  restart: unless-stopped
+
+x-php-env: &php-env
+  APP_NAME: Electro
+  APP_ENV: ${APP_ENV:-local}
+  APP_KEY: ${APP_KEY:-}
+  APP_DEBUG: ${APP_DEBUG:-true}
+  APP_URL: ${APP_URL:-http://localhost}
+  APP_LOCALE: fr
+  APP_FALLBACK_LOCALE: fr
+  LOG_CHANNEL: stack
+  DB_CONNECTION: mysql
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_DATABASE: ${DB_DATABASE:-05_electro}
+  DB_USERNAME: ${DB_USERNAME:-electro}
+  DB_PASSWORD: ${DB_PASSWORD:-secret}
+  BROADCAST_DRIVER: log
+  CACHE_DRIVER: redis
+  QUEUE_CONNECTION: redis
+  SESSION_DRIVER: redis
+  SESSION_LIFETIME: 120
+  SESSION_CONNECTION: default
+  REDIS_HOST: redis
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+  REDIS_PORT: 6379
+  MAIL_MAILER: ${MAIL_MAILER:-smtp}
+  MAIL_HOST: ${MAIL_HOST:-mailpit}
+  MAIL_PORT: ${MAIL_PORT:-1025}
+  MAIL_USERNAME: ${MAIL_USERNAME:-null}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-null}
+  MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-null}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@electro05.ma}
+  MAIL_FROM_NAME: ${MAIL_FROM_NAME:-"Electro-05"}
+  FILESYSTEM_DRIVER: public
+  ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+  FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+  SANCTUM_STATEFUL_DOMAINS: ${SANCTUM_STATEFUL_DOMAINS:-localhost}
+  SESSION_DOMAIN: ${SESSION_DOMAIN:-localhost}
+
+services:
+  # ─── Reverse Proxy ──────────────────────────────────────────
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: electro-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-8080}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - react-build:/var/www/html:ro
+      - laravel-storage:/var/www/api/public/storage:ro
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      laravel:
+        condition: service_healthy
+    # Curl the /health endpoint that Nginx itself returns — confirms the
+    # server is actually accepting and responding to requests (not just
+    # that the config file is valid, which `nginx -t` would only check).
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging: *default-logging
+
+  # ─── React Frontend ─────────────────────────────────────────
+  react:
+    build:
+      context: ..
+      dockerfile: docker/react/Dockerfile
+      target: ${REACT_TARGET:-development}
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost/api}
+        REACT_APP_GOOGLE_CLIENT_ID: ${REACT_APP_GOOGLE_CLIENT_ID:-}
+        REACT_APP_RECAPTCHA_SITE_KEY: ${REACT_APP_RECAPTCHA_SITE_KEY:-}
+        REACT_APP_SITE_URL: ${FRONTEND_URL:-http://localhost}
+        REACT_APP_DEFAULT_LANG: fr
+    container_name: electro-react
+    restart: unless-stopped
+    volumes:
+      - react-build:/build
+    networks:
+      - frontend
+    # Development healthcheck: wait up to 120s for CRA dev server to be ready.
+    # Production healthcheck is overridden to NONE in the Dockerfile itself,
+    # and further overridden to "exit 0" in docker-compose.prod.yml.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
+    logging: *default-logging
+
+  # ─── Laravel PHP-FPM ────────────────────────────────────────
+  laravel:
+    build:
+      context: ..
+      dockerfile: docker/laravel/Dockerfile
+      args:
+        APP_ENV: ${APP_ENV:-local}
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: electro-laravel
+    restart: unless-stopped
+    environment:
+      <<: *php-env
+    volumes:
+      - laravel-storage:/var/www/storage
+      - laravel-framework:/var/www/bootstrap/cache
+    networks:
+      - backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Use tcp-connect via bash to verify PHP-FPM is listening on port 9000.
+    # Avoids needing `pgrep` (unreliable in Alpine BusyBox) or external tools.
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t 2>&1 | grep -q 'test is successful' || pgrep -x php-fpm > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging: *default-logging
+
+  # ─── MySQL Database ─────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: electro-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-05_electro}
+      MYSQL_USER: ${DB_USERNAME:-electro}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend
+    ports:
+      - "${DB_EXPOSE_PORT:-3307}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${DB_ROOT_PASSWORD:-root_secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging: *default-logging
+
+  # ─── phpMyAdmin ─────────────────────────────────────────────
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: electro-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USERNAME:-electro}
+      PMA_PASSWORD: ${DB_PASSWORD:-secret}
+      UPLOAD_LIMIT: 64M
+    ports:
+      # NOTE: PMA_PORT in .env is the HOST port (e.g. 8888).
+      # Must be different from NGINX_HTTP_PORT to avoid port conflict.
+      - "${PMA_PORT:-8888}:80"
+    networks:
+      - backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    profiles:
+      - dev
+      - staging
+    logging: *default-logging
+
+  # ─── Redis Cache / Sessions / Queues ────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: electro-redis
+    restart: unless-stopped
+    command: >
+      sh -c "redis-server --appendonly yes
+      ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}"
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    logging: *default-logging
+
+
+  # ─── Queue Worker ───────────────────────────────────────────
+  queue-worker:
+    build:
+      context: ..
+      dockerfile: docker/laravel/Dockerfile
+      args:
+        APP_ENV: ${APP_ENV:-local}
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: electro-queue
+    restart: unless-stopped
+    environment:
+      <<: *php-env
+    volumes:
+      - laravel-storage:/var/www/storage
+    networks:
+      - backend
+    depends_on:
+      laravel:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >-
+      php artisan queue:work redis
+      --queue=high,default,low
+      --tries=3
+      --timeout=60
+      --sleep=3
+      --delay=5
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'queue:work' > /dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging: *default-logging
+
+  # ─── Scheduler ──────────────────────────────────────────────
+  scheduler:
+    build:
+      context: ..
+      dockerfile: docker/laravel/Dockerfile
+      args:
+        APP_ENV: ${APP_ENV:-local}
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: electro-scheduler
+    restart: unless-stopped
+    environment:
+      <<: *php-env
+    volumes:
+      - laravel-storage:/var/www/storage
+    networks:
+      - backend
+    depends_on:
+      laravel:
+        condition: service_healthy
+    command: >-
+      php artisan schedule:work
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'schedule:work' > /dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging: *default-logging
+
+networks:
+  frontend:
+    driver: bridge
+    # Explicit name prevents "resource still in use" errors on docker compose down
+    # because Docker knows the exact network name and won't leave orphan references.
+    name: electro_frontend
+  backend:
+    driver: bridge
+    name: electro_backend
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  laravel-storage:
+    driver: local
+  laravel-framework:
+    driver: local
+  react-build:
+    driver: local

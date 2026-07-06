@@ -39,35 +39,35 @@ const UNIVERS_CATEGORIES = [
         name: 'Audio Hi-Fi',
         image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800',
         icon: Headphones,
-        path: '/shop/accessories',
+        path: '/shop/accessoires',
         count: '200+ Produits'
     },
     {
         name: 'Électroménager',
         image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800',
         icon: Coffee,
-        path: '/shop/appliances',
+        path: '/shop/electromenager',
         count: '150+ Produits'
     },
     {
         name: 'Smart Home',
         image: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=800',
         icon: HomeIcon,
-        path: '/shop/smart-home',
+        path: '/shop/domotique',
         count: '40+ Produits'
     },
     {
         name: 'TV & Vidéo',
         image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=800',
         icon: Tv,
-        path: '/shop/tv',
+        path: '/shop/tv-son',
         count: '60+ Produits'
     },
     {
         name: 'Réseaux',
         image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800',
         icon: Wifi,
-        path: '/shop/networks',
+        path: '/shop/reseaux',
         count: '30+ Produits'
     }
 ];
@@ -84,7 +84,7 @@ const Home = () => {
         const fetchHomeData = async () => {
             try {
                 const [productsRes, locationsRes] = await Promise.all([
-                    axios.get(`${API_URL}/products`),
+                    axios.get(`${API_URL}/products`, { params: { per_page: 100 } }),
                     axios.get(`${API_URL}/locations`)
                 ]);
 
@@ -174,8 +174,8 @@ const Home = () => {
             <section className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center mb-16 space-y-4">
-                        <span className="text-secondary font-bold tracking-widest uppercase text-sm">{t('home.featured.label')}</span>
-                        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tighter">{t('home.featured.title')}</h2>
+                        <span className="text-secondary font-bold tracking-widest uppercase text-sm">Produits</span>
+                        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tighter">Sélection de Produits</h2>
                         <div className="w-20 h-1.5 bg-premium-gradient mx-auto rounded-full"></div>
                     </div>
 
@@ -196,7 +196,7 @@ const Home = () => {
                             to="/shop/all"
                             className="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 dark:bg-gray-800 text-white rounded-full font-bold hover:bg-premium-gradient transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                         >
-                            {t('home.featured.view_all')} <ArrowRight size={20} />
+                            Voir tout <ArrowRight size={20} />
                         </Link>
                     </div>
                 </div>

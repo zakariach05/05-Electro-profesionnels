@@ -1,0 +1,72 @@
+services:
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: ./nginx/default.prod.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - react-build:/var/www/html:ro
+      - laravel-storage:/var/www/api/public/storage:ro
+
+  react:
+    build:
+      target: production
+    environment:
+      REACT_APP_API_URL: https://electro05.ma/api
+      REACT_APP_SITE_URL: https://electro05.ma
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+
+  laravel:
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://electro05.ma
+      ALLOWED_ORIGINS: https://electro05.ma
+      FRONTEND_URL: https://electro05.ma
+      SANCTUM_STATEFUL_DOMAINS: electro05.ma
+      SESSION_DOMAIN: .electro05.ma
+    build:
+      args:
+        APP_ENV: production
+    volumes:
+      - laravel-storage:/var/www/storage
+      - laravel-framework:/var/www/bootstrap/cache
+
+  mysql:
+    ports: []
+
+  phpmyadmin:
+    profiles:
+      - never
+
+  mailpit:
+    profiles:
+      - never
+
+  queue-worker:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+
+  scheduler:
+    restart: always
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  laravel-storage:
+    driver: local
+  laravel-framework:
+    driver: local
+  react-build:
+    driver: local

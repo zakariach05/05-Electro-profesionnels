@@ -21,6 +21,7 @@ const Home = lazy(() => import('./pages/Home'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Shop = lazy(() => import('./pages/Shop'));
 const Checkout = lazy(() => import('./pages/Checkout'));
+const VirtualPayment = lazy(() => import('./pages/VirtualPayment'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const AdminProducts = lazy(() => import('./pages/AdminProducts'));
 const AdminProductForm = lazy(() => import('./pages/AdminProductForm'));
@@ -39,6 +40,9 @@ const FAQ = lazy(() => import('./pages/FAQ'));
 const Returns = lazy(() => import('./pages/Returns'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Account = lazy(() => import('./pages/Account'));
+const OtpVerify = lazy(() => import('./pages/OtpVerify'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const MagicVerify = lazy(() => import('./pages/MagicVerify'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -118,16 +122,40 @@ function App() {
                         <Suspense fallback={<PageLoader />}>
                           <Routes>
                             <Route path="/" element={<Home />} />
-                            <Route path="/shop" element={<Shop />} />
-                            <Route path="/product/:id" element={<ProductDetail />} />
-                            <Route path="/shop/:category" element={<Shop />} />
-                            <Route path="/shop/:category/:subcategory" element={<Shop />} />
+                            <Route path="/shop" element={
+                              <ProtectedRoute requireVerified>
+                                <Shop />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/product/:id" element={
+                              <ProtectedRoute requireVerified>
+                                <ProductDetail />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/shop/:category" element={
+                              <ProtectedRoute requireVerified>
+                                <Shop />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/shop/:category/:subcategory" element={
+                              <ProtectedRoute requireVerified>
+                                <Shop />
+                              </ProtectedRoute>
+                            } />
                             <Route path="/cart" element={<Home />} />
                             <Route
                               path="/checkout"
                               element={
-                                <ProtectedRoute>
+                                <ProtectedRoute requireVerified>
                                   <Checkout />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/payment/:id"
+                              element={
+                                <ProtectedRoute requireVerified>
+                                  <VirtualPayment />
                                 </ProtectedRoute>
                               }
                             />
@@ -187,12 +215,23 @@ function App() {
                                 </ProtectedRoute>
                               }
                             />
-                            <Route path="/comparison" element={<Comparison />} />
-                            <Route path="/wishlist" element={<Wishlist />} />
+                            <Route path="/comparison" element={
+                              <ProtectedRoute requireVerified>
+                                <Comparison />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/wishlist" element={
+                              <ProtectedRoute requireVerified>
+                                <Wishlist />
+                              </ProtectedRoute>
+                            } />
                             <Route path="/contact" element={<Contact />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route path="/track/:id" element={<OrderTracking />} />
+                            <Route path="/verify-otp" element={<OtpVerify />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                            <Route path="/auth/magic-verify" element={<MagicVerify />} />
                             <Route path="/promotions" element={<Promotions />} />
                             <Route path="/faq" element={<FAQ />} />
                             <Route path="/retours" element={<Returns />} />
@@ -201,7 +240,7 @@ function App() {
                             <Route
                               path="/support"
                               element={
-                                <ProtectedRoute>
+                                <ProtectedRoute requireVerified>
                                   <Support />
                                 </ProtectedRoute>
                               }
@@ -209,7 +248,7 @@ function App() {
                             <Route
                               path="/account"
                               element={
-                                <ProtectedRoute>
+                                <ProtectedRoute requireVerified>
                                   <Account />
                                 </ProtectedRoute>
                               }

@@ -1,0 +1,135 @@
+Voici des requêtes SQL utiles pour analyser et gérer ton système e-commerce :
+
+```sql
+-- 1. Toutes les commandes avec statut et paiement
+SELECT id, customer_name, status, payment_status, total_amount, created_at
+FROM orders
+ORDER BY created_at DESC;
+
+-- 2. Chiffre d'affaires total (commandes payées uniquement)
+SELECT SUM(total_amount) AS chiffre_affaires_total
+FROM orders
+WHERE payment_status = 'paid';
+
+-- 3. Chiffre d'affaires du mois en cours
+SELECT SUM(total_amount) AS ca_mois
+FROM orders
+WHERE payment_status = 'paid'
+  AND MONTH(created_at) = MONTH(CURRENT_DATE)
+  AND YEAR(created_at) = YEAR(CURRENT_DATE);
+
+-- 4. Nombre de commandes par statut
+SELECT status, COUNT(*) AS nombre
+FROM orders
+GROUP BY status;
+
+-- 5. Nombre de commandes par jour (30 derniers jours)
+SELECT DATE(created_at) AS date, COUNT(*) AS commandes, SUM(total_amount) AS revenu
+FROM orders
+WHERE created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+GROUP BY DATE(created_at)
+ORDER BY date DESC;
+
+-- 6. Produits les plus vendus (avec revenu réel)
+SELECT p.id, p.name, SUM(oi.quantity) AS total_vendus,
+       SUM(oi.quantity * oi.price) AS revenu
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.id
+JOIN products p ON oi.product_id = p.id
+WHERE o.payment_status = 'paid'
+GROUP BY p.id, p.name
+ORDER BY total_vendus DESC
+LIMIT 10;
+
+-- 7. Commandes en attente depuis plus de 48h
+SELECT id, customer_name, status, created_at
+FROM orders
+WHERE status = 'pending'
+  AND created_at < DATE_SUB(NOW(), INTERVAL 48 HOUR)
+ORDER BY created_at ASC;
+
+-- 8. Répartition des ventes par ville
+SELECT customer_city, COUNT(*) AS commandes,
+       SUM(total_amount) AS revenu
+FROM orders
+WHERE payment_status = 'paid'
+GROUP BY customer_city
+ORDER BY commandes DESC;
+
+-- 9. Top clients par montant dépensé
+SELECT customer_name, customer_email,
+       COUNT(*) AS commandes,
+       SUM(total_amount) AS total_depense
+FROM orders
+WHERE payment_status = 'paid'
+GROUP BY customer_name, customer_email
+ORDER BY total_depense DESC
+LIMIT 10;
+
+-- 10. Produits en rupture de stock
+SELECT id, name, stock, price
+FROM products
+WHERE stock = 0
+ORDER BY name;
+
+-- 11. Produits en stock critique (< 5 unités)
+SELECT id, name, stock, price
+FROM products
+WHERE stock > 0 AND stock <= 5
+ORDER BY stock ASC;
+
+-- 12. Commandes du jour
+SELECT id, customer_name, total_amount, status, payment_method
+FROM orders
+WHERE DATE(created_at) = CURRENT_DATE
+ORDER BY created_at DESC;
+
+-- 13. Mode de paiement le plus utilisé
+SELECT payment_method, COUNT(*) AS nombre, SUM(total_amount) AS montant
+FROM orders
+GROUP BY payment_method
+ORDER BY nombre DESC;
+
+-- 14. Revenu mensuel (comparaison année courante)
+SELECT MONTH(created_at) AS mois,
+       SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) AS revenu
+FROM orders
+WHERE YEAR(created_at) = YEAR(CURRENT_DATE)
+GROUP BY MONTH(created_at)
+ORDER BY mois;
+
+-- 15. Détail d'une commande avec ses articles
+SELECT o.id, o.customer_name, o.status, o.payment_status,
+       oi.quantity, oi.price, p.name AS produit, s.name AS vendeur
+FROM orders o
+JOIN order_items oi ON o.id = oi.order_id
+JOIN products p ON oi.product_id = p.id
+LEFT JOIN sub_orders so ON oi.sub_order_id = so.id
+LEFT JOIN sellers s ON so.seller_id = s.id
+WHERE o.id = ?  -- remplacer ? par l'ID commande
+
+-- 16. Commandes qui ont des sous-commandes (multi-vendeurs)
+SELECT o.id, o.customer_name, COUNT(so.id) AS nb_vendeurs, o.total_amount
+FROM orders o
+JOIN sub_orders so ON o.id = so.order_id
+GROUP BY o.id, o.customer_name, o.total_amount
+HAVING nb_vendeurs > 1;
+
+-- 17. Taux de conversion paiement
+SELECT
+  COUNT(*) AS total_commandes,
+  SUM(CASE WHEN payment_status = 'paid' THEN 1 ELSE 0 END) AS payees,
+  CONCAT(ROUND(SUM(CASE WHEN payment_status = 'paid' THEN 1 ELSE 0 END) / COUNT(*) * 100), '%') AS taux_paiement
+FROM orders;
+
+-- 18. Vérifier s'il reste des statuts paid_virtual
+SELECT id, customer_name, status, payment_status FROM orders WHERE status LIKE '%virtual%';
+```
+
+Les plus utiles pour ton tableau de bord :
+- **#2** → Chiffre d'affaires total en MAD
+- **#3** → CA du mois
+- **#4** → Répartition des statuts
+- **#6** → Top produits avec vrais revenus
+- **#8** → Répartition géographique
+- **#14** → Tendance mensuelle

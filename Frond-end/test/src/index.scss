@@ -236,3 +236,313 @@ body {
         display: none !important;
     }
 }
+
+// ────────────────────────────────────────────────────────────────────────────
+// GLASSMORPHISM UTILITIES
+// ────────────────────────────────────────────────────────────────────────────
+
+.glass {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.glass-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.1);
+        transform: translateY(-4px);
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// NEON GLOW EFFECTS
+// ────────────────────────────────────────────────────────────────────────────
+
+.neon-blue {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5),
+                0 0 30px rgba(59, 130, 246, 0.3),
+                inset 0 0 10px rgba(59, 130, 246, 0.1);
+}
+
+.neon-purple {
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5),
+                0 0 30px rgba(99, 102, 241, 0.3),
+                inset 0 0 10px rgba(99, 102, 241, 0.1);
+}
+
+.neon-text-blue {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8),
+                 0 0 30px rgba(59, 130, 246, 0.4);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// 3D CARD TILT
+// ────────────────────────────────────────────────────────────────────────────
+
+.card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    &:hover {
+        transform: perspective(1000px) rotateX(4deg) rotateY(-4deg) translateY(-8px);
+        box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.15),
+                    -20px -20px 60px rgba(255, 255, 255, 0.05);
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// GRADIENT TEXT
+// ────────────────────────────────────────────────────────────────────────────
+
+.gradient-text {
+    background: linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-gold {
+    background: linear-gradient(135deg, #FFCB50, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// SHIMMER LOADING EFFECT
+// ────────────────────────────────────────────────────────────────────────────
+
+@keyframes shimmer {
+    0%   { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+
+    .dark & {
+        background: linear-gradient(
+            90deg,
+            #1e293b 25%,
+            #2d3f58 50%,
+            #1e293b 75%
+        );
+        background-size: 1000px 100%;
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// SMOOTH PAGE ENTRY ANIMATION
+// ────────────────────────────────────────────────────────────────────────────
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fade-up {
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// SHAKE ANIMATION (for form errors)
+// ────────────────────────────────────────────────────────────────────────────
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}
+
+.animate-shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// ACCESSIBILITY — Focus Styles
+// ────────────────────────────────────────────────────────────────────────────
+
+*:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// SELECTION COLOR
+// ────────────────────────────────────────────────────────────────────────────
+
+::selection {
+    background: rgba(84, 79, 125, 0.25);
+    color: inherit;
+}
+
+.dark ::selection {
+    background: rgba(59, 130, 246, 0.35);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// PREMIUM BUTTON STYLES
+// ────────────────────────────────────────────────────────────────────────────
+
+.btn-premium {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    &:hover::before {
+        opacity: 1;
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
+/* ── RTL Support ── */
+[dir="rtl"] .space-x-reverse {
+    --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .lg\:ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+[dir="rtl"] .right-0:not(.cart-drawer) {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .left-0 {
+    left: auto;
+    right: 0;
+}
+
+[dir="rtl"] .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+[dir="rtl"] .pl-16 {
+    padding-left: 0;
+    padding-right: 4rem;
+}
+
+[dir="rtl"] .pr-32 {
+    padding-right: 0;
+    padding-left: 8rem;
+}
+
+[dir="rtl"] .right-3 {
+    right: auto;
+    left: 0.75rem;
+}
+
+[dir="rtl"] .left-6 {
+    left: auto;
+    right: 1.5rem;
+}
+
+[dir="rtl"] [style*="left:"] {
+    left: auto !important;
+    right: 0 !important;
+}
+
+[dir="rtl"] [style*="right:"] {
+    right: auto !important;
+    left: 0 !important;
+}
+
+[dir="rtl"] [style*="translateX"]:not([class*="cart-drawer"]) {
+    transform: scaleX(-1) !important;
+}
+
+/* ├░ ── RTL Rotation for Arrow Icons ── */
+[dir="rtl"] .rotate-180[data-rtl-flip="true"] {
+    transform: rotate(-180deg);
+}
+
+/* ├░ ── Dropdown Menu RTL ── */
+[dir="rtl"] .absolute.top-full.right-0 {
+    right: auto;
+    left: 0;
+}
+
+/* ├░ ── Animation ── */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+}
+
+/* ├░ ── Transition for language switch ── */
+html {
+    transition: direction 0ms;
+}
+* {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+}

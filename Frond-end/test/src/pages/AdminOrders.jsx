@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import AdminLayout from '../layouts/AdminLayout';
 import axios from 'axios';
 import { API_URL } from '../services/api';
-import { ShoppingBag, Search, Eye, X, User, MapPin, Phone, Mail, Package, CreditCard, ChevronRight, CheckCircle2, Download, ExternalLink, MessageSquare, Send, Banknote, History, FileText, DownloadCloud, Store } from 'lucide-react';
+import { ShoppingBag, Search, Eye, X, User, MapPin, Phone, Mail, Package, CreditCard, CheckCircle2, Download, ExternalLink, MessageSquare, Banknote, History, FileText, DownloadCloud, Store } from 'lucide-react';
 import getImageUrl from '../services/image';
 import { exportOrdersToExcel } from '../utils/excelExport';
 import Loader from '../components/atoms/Loader';
@@ -15,7 +15,7 @@ const AdminOrders = () => {
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const { token } = useAuth();
+    const { } = useAuth();
     const [isExporting, setIsExporting] = useState(false);
 
     useEffect(() => {
@@ -103,13 +103,16 @@ const AdminOrders = () => {
         switch (status) {
             case 'pending': return 'bg-orange-100 text-orange-600 border-orange-200';
             case 'processing': return 'bg-blue-100 text-blue-600 border-blue-200';
-            case 'completed': return 'bg-green-100 text-green-600 border-green-200';
+            case 'paid': return 'bg-green-100 text-green-600 border-green-200';
+            case 'completed': return 'bg-emerald-100 text-emerald-600 border-emerald-200';
+            case 'delivered': return 'bg-green-100 text-green-600 border-green-200';
             case 'cancelled': return 'bg-red-100 text-red-600 border-red-200';
             case 'refunded': return 'bg-purple-100 text-purple-600 border-purple-200';
             default: return 'bg-gray-100 text-gray-600 border-gray-200';
         }
     };
 
+    // eslint-disable-next-line no-unused-vars
     const getPaymentBadge = (status) => {
         switch (status) {
             case 'paid': return <span className="flex items-center gap-1 text-[10px] font-black text-green-600"><CheckCircle2 size={10} /> PAYÉ</span>;
@@ -158,7 +161,7 @@ const AdminOrders = () => {
                             <div className="w-px h-10 bg-gray-100 self-center"></div>
                             <div className="px-6 py-2 text-center">
                                 <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Chiffre d'affaires</p>
-                                <p className="text-xl font-black text-gray-900">{orders.reduce((acc, o) => acc + (o.payment_status === 'paid' ? o.total_amount : 0), 0).toLocaleString()} DH</p>
+                                <p className="text-xl font-black text-gray-900">{orders.reduce((acc, o) => acc + (o.payment_status === 'paid' ? Number(o.total_amount) : 0), 0).toLocaleString('fr-MA')} DH</p>
                             </div>
                         </div>
                     </div>
@@ -228,13 +231,15 @@ const AdminOrders = () => {
                                                         </div>
                                                     </td>
                                                     <td className="px-8 py-6">
-                                                        <span className="font-black text-gray-900">{order.total_amount?.toLocaleString()} DH</span>
+                                                        <span className="font-black text-gray-900">{Number(order.total_amount)?.toLocaleString('fr-MA')} DH</span>
                                                     </td>
                                                     <td className="px-8 py-6">
                                                         <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase border ${getStatusStyles(order.status)}`}>
                                                             {order.status === 'pending' ? 'En attente' :
                                                                 order.status === 'processing' ? 'En cours' :
-                                                                    order.status === 'completed' ? 'Livré' : 'Annulé'}
+                                                                    order.status === 'paid' ? 'Payé' :
+                                                                        order.status === 'completed' ? 'Terminé' :
+                                                                            order.status === 'delivered' ? 'Livré' : 'Annulé'}
                                                         </span>
                                                     </td>
                                                     <td className="px-8 py-6 text-sm text-gray-500 font-medium">
@@ -370,7 +375,7 @@ const AdminOrders = () => {
 
                                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                                     <div className="flex gap-4">
-                                        <a href={`https://wa.me/${selectedOrder.customer_phone}`} target="_blank" className="p-3 bg-green-500/20 rounded-xl hover:bg-green-500 transition-all" title="WhatsApp">
+                                        <a href={`https://wa.me/${selectedOrder.customer_phone}`} target="_blank" rel="noreferrer" className="p-3 bg-green-500/20 rounded-xl hover:bg-green-500 transition-all" title="WhatsApp">
                                             <MessageSquare size={18} />
                                         </a>
                                         <a href={`mailto:${selectedOrder.customer_email}`} className="p-3 bg-blue-500/20 rounded-xl hover:bg-blue-500 transition-all" title="Email Client">
@@ -489,7 +494,7 @@ const AdminOrders = () => {
                             <div className="space-y-3 mb-6">
                                 <div className="flex justify-between items-center text-sm font-bold text-gray-500">
                                     <span>Sous-total articles</span>
-                                    <span>{(selectedOrder.total_amount - 100)?.toLocaleString()} DH</span>
+                                    <span>{(Number(selectedOrder.total_amount) - 100)?.toLocaleString('fr-MA')} DH</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm font-bold text-gray-500">
                                     <span>Frais de livraison</span>
@@ -504,7 +509,7 @@ const AdminOrders = () => {
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-xl font-black text-gray-900">Total payé</span>
-                                <span className="text-3xl font-black text-primary">{selectedOrder.total_amount?.toLocaleString()} DH</span>
+                                <span className="text-3xl font-black text-primary">{Number(selectedOrder.total_amount)?.toLocaleString('fr-MA')} DH</span>
                             </div>
                         </div>
                     </div>

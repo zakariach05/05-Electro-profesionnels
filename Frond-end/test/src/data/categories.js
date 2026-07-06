@@ -48,51 +48,51 @@ export const CATEGORIES = [
         ]
     },
     {
-        id: 'accessories',
+        id: 'accessoires',
         name: 'Accessoires',
-        path: '/shop/accessories',
+        path: '/shop/accessoires',
         icon: Headphones,
         subcategories: [
-            { name: 'Audio (Casques/Écouteurs)', path: '/shop/accessories/audio' },
-            { name: 'Montres Connectées', path: '/shop/accessories/smartwatches' },
-            { name: 'Chargeurs & Câbles', path: '/shop/accessories/charging' },
-            { name: 'Protection', path: '/shop/accessories/cases' },
+            { name: 'Audio (Casques/Écouteurs)', path: '/shop/accessoires/audio' },
+            { name: 'Montres Connectées', path: '/shop/accessoires/smartwatches' },
+            { name: 'Chargeurs & Câbles', path: '/shop/accessoires/charging' },
+            { name: 'Protection', path: '/shop/accessoires/cases' },
         ],
         featured: []
     },
     {
-        id: 'tv',
+        id: 'tv-son',
         name: 'TV & Son',
-        path: '/shop/tv',
+        path: '/shop/tv-son',
         icon: Home, // Using Home as placeholder or TV if available
         subcategories: [
-            { name: 'Samsung', path: '/shop/tv/samsung' },
-            { name: 'LG', path: '/shop/tv/lg' },
-            { name: 'Sony', path: '/shop/tv/sony' },
+            { name: 'Samsung', path: '/shop/tv-son/samsung' },
+            { name: 'LG', path: '/shop/tv-son/lg' },
+            { name: 'Sony', path: '/shop/tv-son/sony' },
         ],
         featured: []
     },
     {
-        id: 'tablets',
+        id: 'tablettes',
         name: 'Tablettes',
-        path: '/shop/tablets',
+        path: '/shop/tablettes',
         icon: Smartphone, // Using Smartphone as placeholder
         subcategories: [
-            { name: 'iPad', path: '/shop/tablets/ipad' },
-            { name: 'Samsung Tab', path: '/shop/tablets/samsung' },
-            { name: 'Lenovo', path: '/shop/tablets/lenovo' },
+            { name: 'iPad', path: '/shop/tablettes/ipad' },
+            { name: 'Samsung Tab', path: '/shop/tablettes/samsung' },
+            { name: 'Lenovo', path: '/shop/tablettes/lenovo' },
         ],
         featured: []
     },
     {
-        id: 'smart-home',
+        id: 'domotique',
         name: 'Domotique',
-        path: '/shop/smart-home',
+        path: '/shop/domotique',
         icon: Home,
         subcategories: [
-            { name: 'Caméras', path: '/shop/smart-home/cameras' },
-            { name: 'Lumières Connectées', path: '/shop/smart-home/lighting' },
-            { name: 'Assistants Vocaux', path: '/shop/smart-home/assistants' },
+            { name: 'Caméras', path: '/shop/domotique/cameras' },
+            { name: 'Lumières Connectées', path: '/shop/domotique/lighting' },
+            { name: 'Assistants Vocaux', path: '/shop/domotique/assistants' },
         ],
         featured: []
     }

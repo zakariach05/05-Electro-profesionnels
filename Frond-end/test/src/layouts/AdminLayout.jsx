@@ -15,6 +15,17 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import md5 from 'js-md5';
+
+const getAvatarUrl = (user) => {
+    if (user?.avatar) return user.avatar;
+    if (!user?.email) {
+        const name = encodeURIComponent((user?.name || 'U').replace(/\s+/g, '+'));
+        return `https://ui-avatars.com/api/?name=${name}&background=E52E1E&color=fff&size=128&bold=true`;
+    }
+    const emailHash = md5(user.email.toLowerCase().trim());
+    return `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=128`;
+};
 
 const AdminLayout = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -47,7 +58,7 @@ const AdminLayout = ({ children }) => {
                 <div className="p-6 flex items-center justify-between border-b border-gray-800">
                     <div className={`flex flex-col items-center gap-1 ${!isSidebarOpen && 'hidden'}`}>
                         <img
-                            src="/logo.png"
+                            src="/logo-nv.png"
                             alt="Admin Badge"
                             className="h-10 w-auto"
                         />
@@ -152,8 +163,13 @@ const AdminLayout = ({ children }) => {
                                 <p className="text-sm font-bold text-gray-900">{user?.name}</p>
                                 <p className="text-[10px] font-black text-secondary uppercase tracking-widest">{user?.role}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-gray-100 border-2 border-premium-gradient-light flex items-center justify-center font-bold text-primary">
-                                {user?.name?.charAt(0)}
+                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-sm flex-shrink-0">
+                                <img 
+                                    src={getAvatarUrl(user)} 
+                                    alt={user?.name} 
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name||'A')}&background=E52E1E&color=fff&size=128&bold=true`; }}
+                                />
                             </div>
                         </div>
                     </div>

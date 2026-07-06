@@ -6,6 +6,7 @@ import CompareBar from '../components/organisms/CompareBar';
 import { useLanguage } from '../context/LanguageContext';
 import WhatsAppButton from '../components/atoms/WhatsAppButton';
 import { useAuth } from '../context/AuthContext';
+import WelcomePopup from '../components/molecules/WelcomePopup';
 
 const MainLayout = ({ children }) => {
     const location = useLocation();
@@ -39,6 +40,7 @@ const MainLayout = ({ children }) => {
             <Footer />
             <CompareBar />
             <WhatsAppButton />
+            <WelcomePopup />
         </div>
     );
 };

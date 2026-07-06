@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Intégration Google Identity Services – Electro 05" />
+    <title>Google Sign-In · Electro 05</title>
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ─── Reset & Base ─────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --brand-red:   #E52E1E;
+            --brand-dark:  #0f172a;
+            --google-blue: #4285F4;
+            --google-red:  #EA4335;
+            --google-yellow:#FBBC05;
+            --google-green: #34A853;
+            --glass-bg:    rgba(255,255,255,0.06);
+            --glass-border:rgba(255,255,255,0.12);
+            --radius-xl:   24px;
+            --radius-lg:   16px;
+            --radius-md:   12px;
+            --shadow-glow: 0 0 60px rgba(66,133,244,0.25);
+            --transition:  all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--brand-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ─── Animated Background ───────────────────────────────── */
+        .bg-orbs {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: float 8s ease-in-out infinite;
+        }
+        .orb-1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, #4285F4, transparent);
+            top: -150px; left: -100px;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, #EA4335, transparent);
+            bottom: -100px; right: -80px;
+            animation-delay: -3s;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, #34A853, transparent);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -6s;
+        }
+        @keyframes float {
+            0%,100% { transform: translateY(0) scale(1); }
+            50%      { transform: translateY(-30px) scale(1.05); }
+        }
+
+        /* ─── Grid overlay ──────────────────────────────────────── */
+        .bg-grid {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ─── Main container ────────────────────────────────────── */
+        .page-wrapper {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 480px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* ─── Brand header ──────────────────────────────────────── */
+        .brand-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideDown 0.6s ease-out both;
+            flex-shrink: 0;
+        }
+        .brand-logo {
+            width: 56px; height: 56px;
+            min-width: 56px; min-height: 56px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--brand-red) 0%, #ff6b5b 100%);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 32px rgba(229,46,30,0.4);
+            font-size: 1.5rem;
+        }
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 0.05em;
+        }
+
+        /* ─── Card ──────────────────────────────────────────────── */
+        .auth-card {
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem 2rem;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow:
+                0 24px 64px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: slideUp 0.6s ease-out 0.1s both;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* ─── Divider ───────────────────────────────────────────── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1;
+            height: 1px;
+            background: var(--glass-border);
+        }
+        .divider span {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        /* ─── Official Google Button ────────────────────────────── */
+        /* Wrapper for the GIS rendered button */
+        #google-btn-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        /* Fallback / custom button (shown if GIS not loaded) */
+        .google-custom-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            background: #fff;
+            color: #3c4043;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'Google Sans', 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .google-custom-btn::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.05);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .google-custom-btn:hover::before { opacity: 1; }
+        .google-custom-btn:active { transform: scale(0.98); }
+        .google-custom-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Google multicolor logo SVG */
+        .google-logo {
+            flex-shrink: 0;
+            width: 20px; height: 20px;
+        }
+
+        /* ─── One-Tap trigger button ─────────────────────────────── */
+        .onetap-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            background: transparent;
+            color: rgba(255,255,255,0.85);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .onetap-btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+        .onetap-btn:active { transform: scale(0.98); }
+
+        /* ─── Loader overlay ────────────────────────────────────── */
+        .loader-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .loader-overlay.active { display: flex; }
+
+        .loader-ring {
+            width: 56px; height: 56px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-top-color: var(--google-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loader-text {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Profile card (shown after login) ──────────────────── */
+        .profile-card {
+            display: none;
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+            animation: slideUp 0.5s ease-out both;
+            text-align: center;
+        }
+        .profile-card.visible { display: block; animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+        .profile-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--google-blue);
+            box-shadow: 0 0 0 6px rgba(66,133,244,0.2);
+            margin: 0 auto 1rem;
+            display: block;
+        }
+        .profile-avatar-placeholder {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--google-blue), #34A853);
+            margin: 0 auto 1rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: 800; color: #fff;
+            border: 3px solid var(--google-blue);
+            box-shadow: 0 0 0 6px rgba(66,133,244,0.2);
+        }
+        .profile-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        .profile-email {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.5rem;
+        }
+        .profile-verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(52,168,83,0.15);
+            border: 1px solid rgba(52,168,83,0.3);
+            border-radius: 999px;
+            color: #34A853;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ─── Token debugger ────────────────────────────────────── */
+        .token-section {
+            text-align: left;
+            margin-top: 1.5rem;
+        }
+        .token-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .token-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 0.875rem 1rem;
+            font-size: 0.72rem;
+            color: #34A853;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            max-height: 80px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+        .payload-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 0.875rem 1rem;
+            font-size: 0.72rem;
+            color: #FBBC05;
+            font-family: 'Courier New', monospace;
+            max-height: 160px;
+            overflow-y: auto;
+            white-space: pre;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+
+        /* ─── Action buttons ────────────────────────────────────── */
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, var(--brand-red), #ff4d3f);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.75rem;
+            box-shadow: 0 4px 20px rgba(229,46,30,0.35);
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(229,46,30,0.45); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* ─── Error toast ───────────────────────────────────────── */
+        .toast {
+            display: none;
+            position: fixed;
+            bottom: 2rem; left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: rgba(234,67,53,0.15);
+            border: 1px solid rgba(234,67,53,0.4);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.25rem;
+            color: #EA4335;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(12px);
+            animation: slideUpToast 0.3s ease-out both;
+            white-space: nowrap;
+        }
+        .toast.visible { display: block; }
+        @keyframes slideUpToast {
+            from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ─── Security badge ────────────────────────────────────── */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem;
+            font-weight: 600;
+            animation: slideDown 0.6s ease-out 0.3s both;
+        }
+
+        /* ─── Animations ────────────────────────────────────────── */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* ─── Responsive ────────────────────────────────────────── */
+        @media (max-width: 480px) {
+            .auth-card { padding: 2rem 1.5rem; }
+            .card-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Animated background ──────────────────────────────────────── -->
+<div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<!-- ── LOADER OVERLAY ────────────────────────────────────────────── -->
+<div class="loader-overlay" id="loaderOverlay" role="status" aria-live="polite">
+    <div class="loader-ring"></div>
+    <p class="loader-text">Authentification en cours…</p>
+</div>
+
+<!-- ── ERROR TOAST ───────────────────────────────────────────────── -->
+<div class="toast" id="errorToast" role="alert"></div>
+
+<!-- ── MAIN WRAPPER ──────────────────────────────────────────────── -->
+<div class="page-wrapper">
+
+    <!-- Brand -->
+    <div class="brand-header">
+        <div class="brand-logo" aria-hidden="true">⚡</div>
+        <span class="brand-name">ELECTRO-05</span>
+    </div>
+
+    <!-- ── Auth Card (login view) ──────────────────────────────── -->
+    <div class="auth-card" id="authCard">
+        <h1 class="card-title">Connectez-vous</h1>
+        <p class="card-subtitle">Accédez à votre espace Electro-05 avec votre compte Google.</p>
+
+        <!-- Official Google Sign-In Button rendered by GIS -->
+        <div id="google-btn-wrapper"></div>
+
+        <div class="divider"><span>ou</span></div>
+
+        <!-- Manual One-Tap trigger -->
+        <button class="onetap-btn" id="oneTapBtn" type="button" onclick="triggerOneTap()">
+            <!-- Google icon -->
+            <svg class="google-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                <path fill="#4285F4" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
+            </svg>
+            Connexion One-Tap Google
+        </button>
+    </div>
+
+    <!-- ── Profile Card (after login) ─────────────────────────── -->
+    <div class="profile-card" id="profileCard">
+        <div id="profileAvatarWrapper"></div>
+        <p class="profile-name" id="profileName">–</p>
+        <p class="profile-email" id="profileEmail">–</p>
+        <div class="profile-verified">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Compte Google vérifié
+        </div>
+
+        <!-- JWT debug panel -->
+        <div class="token-section">
+            <p class="token-label">🔑 JWT Credential (raw)</p>
+            <div class="token-box" id="rawToken">–</div>
+        </div>
+        <div class="token-section">
+            <p class="token-label">📦 Payload décodé</p>
+            <div class="payload-box" id="decodedPayload">–</div>
+        </div>
+        <div class="token-section">
+            <p class="token-label">🚀 Réponse Backend</p>
+            <div class="payload-box" id="backendResponse">En attente…</div>
+        </div>
+
+        <button class="btn-primary" onclick="handleLogout()">
+            Se déconnecter
+        </button>
+    </div>
+
+    <!-- Security badge -->
+    <div class="security-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:#34A853">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+        </svg>
+        Connexion sécurisée · HTTPS · OAuth 2.0 · OpenID Connect
+    </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     JAVASCRIPT – Google Identity Services Integration
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  CONFIGURATION                                          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const CONFIG = {
+    // ✅ Remplacez par votre vrai Client ID Google OAuth 2.0
+    CLIENT_ID: '479080248944-8r3n8qohgr6nbla44ii0kn64o40ppa5b.apps.googleusercontent.com',
+
+    // 🔗 Endpoint Laravel (Sanctum)
+    BACKEND_URL: 'http://127.0.0.1:8000/api/auth/google',
+
+    // 🔐 Options GIS
+    UX_MODE: 'popup',          // 'popup' | 'redirect'
+    AUTO_SELECT: false,        // Sélection automatique si un seul compte
+    CANCEL_ON_TAP_OUTSIDE: true,
+    CONTEXT: 'signin',         // 'signin' | 'signup' | 'use'
+};
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  UTILITIES                                              ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+/** Decode a JWT without verifying signature (client-side preview only) */
+function decodeJWT(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64    = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch {
+        return null;
+    }
+}
+
+/** Show / hide the loading overlay */
+function setLoading(show) {
+    document.getElementById('loaderOverlay').classList.toggle('active', show);
+}
+
+/** Show error toast for 4 seconds */
+function showError(message) {
+    const toast = document.getElementById('errorToast');
+    toast.textContent = '⚠️ ' + message;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 4000);
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  MAIN CALLBACK – handleCredentialResponse               ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+/**
+ * Called by Google GIS when the user completes sign-in.
+ * @param {google.accounts.id.CredentialResponse} response
+ */
+async function handleCredentialResponse(response) {
+    const credential = response.credential;
+
+    // 1. Show loader
+    setLoading(true);
+
+    // 2. Decode JWT payload (client-side preview — NOT for trust)
+    const payload = decodeJWT(credential);
+
+    if (!payload) {
+        setLoading(false);
+        showError('Impossible de décoder le token Google.');
+        return;
+    }
+
+    // 3. Display profile UI
+    renderProfileCard(payload, credential);
+
+    // 4. Send credential securely to Laravel backend
+    await sendToBackend(credential, payload.picture);
+
+    // 5. Hide loader
+    setLoading(false);
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  SEND TO BACKEND                                        ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+/**
+ * POST the Google JWT credential to the Laravel API.
+ * The Laravel backend will:
+ *   - Verify signature using Google's public keys
+ *   - Validate audience (client_id)
+ *   - Find or create the user
+ *   - Return a Sanctum Bearer token
+ */
+async function sendToBackend(credential, googlePicture = null) {
+    const backendEl = document.getElementById('backendResponse');
+    backendEl.textContent = 'Envoi vers le backend…';
+
+    try {
+        const response = await fetch(CONFIG.BACKEND_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept':       'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ credential }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP ${response.status}`);
+        }
+
+        // Persist Sanctum token
+        if (data.access_token) {
+            localStorage.setItem('electro05_token', data.access_token);
+            // Normalize picture: backend returns 'avatar', Google JWT has 'picture'
+            const pictureUrl = data.user?.avatar || data.user?.picture || googlePicture || null;
+            const userToSave = {
+                ...data.user,
+                picture: pictureUrl,  // always save as 'picture' for consistency
+                avatar:  pictureUrl,  // also save as 'avatar' as backup
+            };
+            localStorage.setItem('electro05_user', JSON.stringify(userToSave));
+
+            // Update profile card avatar NOW that we have the confirmed backend URL
+            if (pictureUrl) {
+                const avatarWrapper = document.getElementById('profileAvatarWrapper');
+                const img = document.createElement('img');
+                img.src       = pictureUrl;
+                img.alt       = data.user?.name || 'Avatar';
+                img.className = 'profile-avatar';
+                img.onerror   = () => renderInitialsAvatar(avatarWrapper, data.user?.name);
+                avatarWrapper.innerHTML = '';
+                avatarWrapper.appendChild(img);
+            }
+        }
+
+        backendEl.textContent = JSON.stringify({
+            success:      data.success,
+            token_type:   data.token_type,
+            access_token: data.access_token ? data.access_token.slice(0, 32) + '…' : null,
+            user: {
+                id:    data.user?.id,
+                name:  data.user?.name,
+                email: data.user?.email,
+                role:  data.user?.role,
+            }
+        }, null, 2);
+
+    } catch (err) {
+        // If backend not available (dev mode), still show profile
+        backendEl.textContent = JSON.stringify({
+            error: err.message,
+            note: 'Vérifiez que le backend Laravel est démarré sur ' + CONFIG.BACKEND_URL,
+        }, null, 2);
+        showError('Backend: ' + err.message);
+    }
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  PROFILE CARD RENDERER                                  ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+function renderProfileCard(payload, rawToken) {
+    // Avatar
+    const avatarWrapper = document.getElementById('profileAvatarWrapper');
+    if (payload.picture) {
+        const img = document.createElement('img');
+        img.src       = payload.picture;
+        img.alt       = payload.name || 'Avatar';
+        img.className = 'profile-avatar';
+        img.onerror   = () => renderInitialsAvatar(avatarWrapper, payload.name);
+        avatarWrapper.innerHTML = '';
+        avatarWrapper.appendChild(img);
+    } else {
+        renderInitialsAvatar(avatarWrapper, payload.name);
+    }
+
+    // Name & email
+    document.getElementById('profileName').textContent  = payload.name  || '–';
+    document.getElementById('profileEmail').textContent = payload.email || '–';
+
+    // Raw JWT (truncated for display)
+    document.getElementById('rawToken').textContent = rawToken.slice(0, 120) + '…';
+
+    // Decoded payload (pretty JSON)
+    const displayPayload = {
+        sub:            payload.sub,
+        email:          payload.email,
+        email_verified: payload.email_verified,
+        name:           payload.name,
+        given_name:     payload.given_name,
+        family_name:    payload.family_name,
+        locale:         payload.locale,
+        iss:            payload.iss,
+        aud:            payload.aud,
+        iat:            new Date(payload.iat * 1000).toISOString(),
+        exp:            new Date(payload.exp * 1000).toISOString(),
+    };
+    document.getElementById('decodedPayload').textContent = JSON.stringify(displayPayload, null, 2);
+
+    // Toggle views
+    document.getElementById('authCard').style.display    = 'none';
+    document.getElementById('profileCard').style.display = 'block';
+    document.getElementById('profileCard').classList.add('visible');
+}
+
+function renderInitialsAvatar(wrapper, name) {
+    const initial = (name || '?')[0].toUpperCase();
+    wrapper.innerHTML = `<div class="profile-avatar-placeholder">${initial}</div>`;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  LOGOUT                                                 ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+function handleLogout() {
+    // Revoke Google token (One-Tap)
+    const user = JSON.parse(localStorage.getItem('electro05_user') || '{}');
+    if (user.email && typeof google !== 'undefined') {
+        google.accounts.id.revoke(user.email, () => {
+            console.log('Google token revoked');
+        });
+    }
+
+    // Clear storage
+    localStorage.removeItem('electro05_token');
+    localStorage.removeItem('electro05_user');
+
+    // Reset UI
+    document.getElementById('profileCard').style.display = 'none';
+    document.getElementById('profileCard').classList.remove('visible');
+    document.getElementById('authCard').style.display    = 'block';
+
+    // Re-init GIS
+    initGoogleSignIn();
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  ONE-TAP TRIGGER (manual button)                        ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+function triggerOneTap() {
+    if (typeof google !== 'undefined') {
+        google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed()) {
+                showError('Popup bloquée. Essayez le bouton "Se connecter avec Google".');
+            } else if (notification.isSkippedMoment()) {
+                console.info('One-Tap skipped:', notification.getSkippedReason());
+            }
+        });
+    } else {
+        showError('Script Google non chargé. Vérifiez votre connexion internet.');
+    }
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  INITIALIZE GIS                                         ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+function initGoogleSignIn() {
+    if (typeof google === 'undefined') {
+        // GIS script not yet loaded, retry
+        setTimeout(initGoogleSignIn, 300);
+        return;
+    }
+
+    // 🔧 Initialize GIS
+    google.accounts.id.initialize({
+        client_id:             CONFIG.CLIENT_ID,
+        callback:              handleCredentialResponse,
+        auto_select:           CONFIG.AUTO_SELECT,
+        cancel_on_tap_outside: CONFIG.CANCEL_ON_TAP_OUTSIDE,
+        context:               CONFIG.CONTEXT,
+        ux_mode:               CONFIG.UX_MODE,
+        use_fedcm_for_prompt:  false,   // Disable FedCM for max browser support
+    });
+
+    // 🎨 Render the OFFICIAL Google button
+    google.accounts.id.renderButton(
+        document.getElementById('google-btn-wrapper'),
+        {
+            type:           'standard',   // 'standard' | 'icon'
+            theme:          'outline',    // 'outline' | 'filled_blue' | 'filled_black'
+            size:           'large',      // 'small' | 'medium' | 'large'
+            text:           'signin_with',// 'signin_with' | 'signup_with' | 'continue_with'
+            shape:          'rectangular',// 'rectangular' | 'pill' | 'circle' | 'square'
+            logo_alignment: 'left',
+            width:          400,
+            locale:         'fr',
+        }
+    );
+
+    // 🚀 Auto-prompt One-Tap (will show Google popup if user is signed in to Google)
+    google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+            console.info('One-Tap not shown:', notification.getNotDisplayedReason());
+        }
+    });
+}
+
+/* ── Init on DOMContentLoaded ────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if already logged in
+    const savedToken = localStorage.getItem('electro05_token');
+    const savedUser  = JSON.parse(localStorage.getItem('electro05_user') || 'null');
+
+    if (savedToken && savedUser) {
+        // Restore session UI (no fresh decode needed)
+        // Cherche la photo dans tous les champs possibles
+        const pictureUrl = savedUser.picture || savedUser.avatar || savedUser.photo_url || null;
+        const partial = {
+            name:    savedUser.name,
+            email:   savedUser.email,
+            picture: pictureUrl,
+        };
+        renderProfileCard(partial, savedToken);
+        document.getElementById('backendResponse').textContent = 'Session restaurée depuis localStorage.';
+        setLoading(false);
+    } else {
+        initGoogleSignIn();
+    }
+});
+</script>
+
+</body>
+</html>

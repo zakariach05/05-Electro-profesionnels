@@ -101,7 +101,7 @@ const Contact = () => {
                             <ContactInfoCard
                                 icon={<Mail className="text-primary" />}
                                 title="Email Direct"
-                                content="chzakaria037@gmail.com"
+                                content="zisco7039@gmail.com"
                                 subContent="Réponse sous 12 heures"
                             />
                             <ContactInfoCard

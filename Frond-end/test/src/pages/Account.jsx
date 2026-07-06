@@ -4,7 +4,6 @@ import MainLayout from '../layouts/MainLayout';
 import {
     User,
     Package,
-    Settings,
     LogOut,
     ChevronRight,
     MapPin,
@@ -16,14 +15,26 @@ import {
     Eye,
     CheckCircle2,
     Truck,
-    AlertCircle
+    AlertCircle,
+    CreditCard
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../services/api';
 import toast from 'react-hot-toast';
+import md5 from 'js-md5';
 import SEO from '../components/atoms/SEO';
 import Loader from '../components/atoms/Loader';
+
+const getAvatarUrl = (user) => {
+    if (user?.avatar) return user.avatar;
+    if (!user?.email) {
+        const name = encodeURIComponent((user?.name || 'U').replace(/\s+/g, '+'));
+        return `https://ui-avatars.com/api/?name=${name}&background=E52E1E&color=fff&size=128&bold=true`;
+    }
+    const emailHash = md5(user.email.toLowerCase().trim());
+    return `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=128`;
+};
 
 const Account = () => {
     const { user, logout, loading: authLoading } = useAuth();
@@ -147,6 +158,22 @@ const Account = () => {
                         {/* Sidebar Navigation */}
                         <div className="lg:col-span-3">
                             <nav className="bg-white dark:bg-gray-900 rounded-[32px] p-4 shadow-xl shadow-black/5 dark:shadow-none border border-gray-100 dark:border-white/5 sticky top-24">
+                                {/* Avatar */}
+                                <div className="flex flex-col items-center gap-3 pb-4 mb-4 border-b border-gray-100 dark:border-white/5">
+                                    <img
+                                        src={getAvatarUrl(user)}
+                                        alt={user.name}
+                                        className="w-20 h-20 rounded-2xl object-cover shadow-lg"
+                                        onError={(e) => {
+                                            const name = encodeURIComponent((user?.name || 'U').replace(/\s+/g, '+'));
+                                            e.target.src = `https://ui-avatars.com/api/?name=${name}&background=E52E1E&color=fff&size=128&bold=true`;
+                                        }}
+                                    />
+                                    <div className="text-center">
+                                        <p className="font-black text-gray-900 dark:text-white text-sm">{user.name}</p>
+                                        <p className="text-[10px] text-gray-400 font-medium">{user.email}</p>
+                                    </div>
+                                </div>
                                 <ul className="space-y-2">
                                     {navItems.map((item) => (
                                         <li key={item.id}>
@@ -231,10 +258,19 @@ const Account = () => {
                                                         <div className="flex items-center gap-4">
                                                             <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest ${orders[0].status === 'completed' ? 'bg-green-100 text-green-600' :
                                                                     orders[0].status === 'cancelled' ? 'bg-red-100 text-red-600' :
+                                                                     orders[0].status === 'paid' || orders[0].payment_status === 'paid' ? 'bg-green-100 text-green-600' :
                                                                         'bg-blue-100 text-blue-600'
-                                                                }`}>
-                                                                {orders[0].status}
+                                                                 }`}>
+                                                                 {orders[0].status === 'paid' ? 'Payé' : orders[0].status}
                                                             </div>
+                                                            {orders[0].status === 'pending' && (orders[0].payment_method === 'online' || orders[0].payment_method === 'card') && (
+                                                                <button
+                                                                    onClick={() => navigate(`/payment/${orders[0].id}`, { state: { amount: orders[0].total_amount, itemCount: orders[0].items?.length || 1 } })}
+                                                                    className="px-4 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                                                                >
+                                                                    <CreditCard size={14} /> Payer maintenant
+                                                                </button>
+                                                            )}
                                                             <Link
                                                                 to={`/track/${orders[0].id}`}
                                                                 className="p-3 bg-white dark:bg-gray-800 rounded-xl text-primary shadow-sm hover:scale-110 active:scale-95 transition-all"
@@ -284,21 +320,34 @@ const Account = () => {
                                                         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                                                             <div className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${order.status === 'completed' ? 'bg-green-100 text-green-600' :
                                                                     order.status === 'cancelled' ? 'bg-red-100 text-red-600' :
+                                                                    order.status === 'paid' || order.payment_status === 'paid' ? 'bg-green-100 text-green-600' :
                                                                         'bg-blue-100 text-blue-600'
-                                                                }`}>
-                                                                {order.status}
+                                                                 }`}>
+                                                                 {order.status === 'paid' ? 'Payé' : order.status}
                                                             </div>
-                                                            <Link to={`/track/${order.id}`} className="text-primary font-black text-[10px] uppercase flex items-center gap-1 hover:underline">
-                                                                Détails <ChevronRight size={14} />
+                                                            {order.status === 'pending' && (order.payment_method === 'online' || order.payment_method === 'card') && (
+                                                                <button
+                                                                    onClick={() => navigate(`/payment/${order.id}`, { state: { amount: order.total_amount, itemCount: order.items?.length || 1 } })}
+                                                                    className="px-3 py-1.5 bg-primary text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center gap-1.5"
+                                                                >
+                                                                    <CreditCard size={12} /> Payer
+                                                                </button>
+                                                            )}
+                                                            <Link
+                                                                to={`/track/${order.id}`}
+                                                                className="p-2.5 bg-white dark:bg-gray-800 rounded-xl text-primary shadow-sm hover:scale-110 active:scale-95 transition-all"
+                                                            >
+                                                                <Eye size={16} />
                                                             </Link>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="text-center py-20">
-                                                <Package size={60} className="mx-auto text-gray-200 mb-6" />
-                                                <h3 className="text-xl font-bold text-gray-400">Aucun historique disponible.</h3>
+                                            <div className="text-center py-20 bg-gray-50 dark:bg-white/5 rounded-[32px] border-2 border-dashed border-gray-200 dark:border-white/10">
+                                                <Package size={48} className="mx-auto text-gray-300 mb-4" />
+                                                <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Aucune commande trouvée</p>
+                                                <Link to="/shop" className="mt-4 inline-block text-primary font-black text-xs uppercase hover:underline">Découvrir la boutique</Link>
                                             </div>
                                         )}
                                     </div>
@@ -309,10 +358,10 @@ const Account = () => {
                                     <div className="p-8 lg:p-12 animate-fade-in">
                                         <div className="flex items-center justify-between mb-10">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-500">
+                                                <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-500/20 flex items-center justify-center text-green-500">
                                                     <User size={20} />
                                                 </div>
-                                                <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase">Informations personnelles</h2>
+                                                <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase">Mon profil</h2>
                                             </div>
                                             {!isEditing && (
                                                 <button
@@ -367,15 +416,16 @@ const Account = () => {
                                                     </div>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Ville</label>
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Wilaya</label>
                                                     <div className="relative">
                                                         <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                                                         <select
                                                             disabled={!isEditing}
-                                                            className="account-input pl-12 appearance-none"
+                                                            className="account-input pl-12"
                                                             value={profileData.city}
                                                             onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
                                                         >
+                                                            <option value="">Sélectionnez une wilaya</option>
                                                             <option value="Casablanca">Casablanca</option>
                                                             <option value="Rabat">Rabat</option>
                                                             <option value="Tanger">Tanger</option>
@@ -399,7 +449,7 @@ const Account = () => {
                                             </div>
 
                                             {isEditing && (
-                                                <div className="flex gap-4 pt-4 border-t border-gray-100 dark:border-white/5 pt-8">
+                                                <div className="flex gap-4 pt-8 border-t border-gray-100 dark:border-white/5">
                                                     <button
                                                         type="submit"
                                                         className="px-8 py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
@@ -409,7 +459,8 @@ const Account = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() => {
-                                                            setIsEditing(false); setProfileData({
+                                                            setIsEditing(false);
+                                                            setProfileData({
                                                                 name: user.name || '',
                                                                 phone: user.phone || '',
                                                                 city: user.city || 'Casablanca',

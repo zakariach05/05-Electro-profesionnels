@@ -118,7 +118,8 @@ const InteractiveHero = ({ products }) => {
                                     alt={currentProduct.name}
                                     className="drop-shadow-[0_45px_45px_rgba(0,0,0,0.6)] animate-float-premium pointer-events-auto select-none"
                                     onError={(e) => {
-                                        e.target.src = "https://images.unsplash.com/photo-1592890288564-76628a30a657?q=80&w=800";
+                                        e.target.src = "/logo-placeholder.png"; // Or just hide it
+                                        e.target.style.opacity = '0.5';
                                     }}
                                 />
                             </div>

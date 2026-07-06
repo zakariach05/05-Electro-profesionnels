@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../services/api';
 import { getImageUrl } from '../services/image';
 import MainLayout from '../layouts/MainLayout';
 import {
+    CreditCard,
     Package,
     Truck,
     CheckCircle2,
@@ -19,6 +20,7 @@ import SEO from '../components/atoms/SEO';
 
 const OrderTracking = () => {
     const { id: urlParamId } = useParams();
+    const navigate = useNavigate();
     const [orderIdInput, setOrderIdInput] = useState('');
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -177,6 +179,27 @@ const OrderTracking = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Payment Section (If Pending) */}
+                            {order.status === 'pending' && (order.payment_method === 'online' || order.payment_method === 'card') && (
+                                <div className="p-8 bg-blue-50 dark:bg-primary/5 rounded-[40px] border-2 border-dashed border-primary/20 flex flex-col md:flex-row items-center justify-between gap-8 animate-pulse-subtle">
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-16 h-16 rounded-3xl bg-primary flex items-center justify-center text-white shadow-2xl shadow-primary/40">
+                                            <CreditCard size={32} />
+                                        </div>
+                                        <div>
+                                            <p className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Paiement en attente</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest opacity-70">Action requise pour expédition</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => navigate(`/payment/${order.id}`, { state: { amount: order.total_amount, itemCount: order.items?.length || 1 } })}
+                                        className="w-full md:w-auto px-10 py-5 bg-primary text-white rounded-[25px] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all"
+                                    >
+                                        Finaliser le Paiement
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Order Products */}
                             <div className="bg-white dark:bg-gray-900 rounded-[40px] p-8 lg:p-12 shadow-2xl shadow-black/5 dark:shadow-none border border-gray-100 dark:border-white/5">

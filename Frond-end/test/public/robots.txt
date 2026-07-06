@@ -1,3 +1,15 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /payment/
+Disallow: /account
+Disallow: /support
+Disallow: /verify-otp
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://05-electro.kesug.com/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

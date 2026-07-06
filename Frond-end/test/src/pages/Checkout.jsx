@@ -19,6 +19,8 @@ import axios from 'axios';
 import { API_URL } from '../services/api';
 import getImageUrl from '../services/image';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+import LoginModal from '../components/molecules/LoginModal';
 
 const Checkout = () => {
     const { cartItems, cartTotal, cartCount, ACOMPTE_AMOUNT, SHIPPING_FEE, clearCart, removeItemsByIds } = useCart();
@@ -36,6 +38,9 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState('cod'); // cod, card, wallet
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState(null);
+    const { user, token } = useAuth();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(!user && !token);
+    const [isGuest, setIsGuest] = useState(false);
 
     // Group items by seller
     const sellerGroups = useMemo(() => {
@@ -67,6 +72,22 @@ const Checkout = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Pre-fill form if user is logged in
+    React.useEffect(() => {
+        if (user) {
+            const [firstName, lastName] = (user.name || '').split(' ');
+            setFormData({
+                firstName: firstName || '',
+                lastName: lastName || '',
+                email: user.email || '',
+                phone: user.phone || '',
+                address: user.address || '',
+                city: user.city || 'Casablanca',
+            });
+            setIsLoginModalOpen(false);
+        }
+    }, [user]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -92,6 +113,12 @@ const Checkout = () => {
 
             // Capture these before clearing the cart
             const finalCount = cartCount;
+
+            if (paymentMethod === 'card') {
+                clearCart();
+                navigate(`/payment/${orderData.order_id}`, { state: { amount: TOTAL_FINAL, itemCount: finalCount } });
+                return;
+            }
 
             toast.success(
                 <div className="py-2">
@@ -250,6 +277,14 @@ const Checkout = () => {
 
     return (
         <MainLayout>
+            <LoginModal 
+                isOpen={isLoginModalOpen && !isGuest} 
+                onClose={() => setIsLoginModalOpen(false)}
+                onGuestContinue={() => {
+                    setIsGuest(true);
+                    setIsLoginModalOpen(false);
+                }}
+            />
             <div className="bg-[#f8fafc] min-h-screen pt-6 pb-10 lg:pt-16 lg:pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -305,7 +340,7 @@ const Checkout = () => {
                                                 </div>
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Ville</label>
+                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Wilaya</label>
                                                 <select name="city" required className="checkout-input" value={formData.city} onChange={handleInputChange}>
                                                     <option value="Casablanca">Casablanca</option>
                                                     <option value="Rabat">Rabat</option>
@@ -398,10 +433,10 @@ const Checkout = () => {
                                                     <div>
                                                         <p className="font-black text-gray-900 uppercase text-sm tracking-wide">Paiement par Carte Bancaire</p>
                                                         <p className="text-xs text-gray-500 mt-1">Visa, Mastercard, CMI. Paiement 100% sécurisé.</p>
-                                                        <div className="flex gap-2 mt-3 grayscale group-hover:grayscale-0 transition-all opacity-60 group-hover:opacity-100">
-                                                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
-                                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
-                                                            <img src={getImageUrl('cmi.png')} alt="CMI" className="h-5" />
+                                                        <div className="flex gap-2 mt-3 transition-all flex-wrap">
+                                                            <img src={getImageUrl('marque/visa.png')} alt="Visa" className="h-4 bg-white rounded-sm px-1" />
+                                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 bg-white rounded-sm px-1" />
+                                                            <img src={getImageUrl('marque/cmi.jpeg')} alt="CMI" className="h-5 bg-white rounded-sm px-1" />
                                                         </div>
                                                     </div>
                                                 </div>
