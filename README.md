@@ -1,23 +1,29 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Electric%20plug/3D/electric_plug_3d.png" width="120"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=220&section=header&text=Electro-05&fontSize=70&fontColor=fff&animation=twinkling&fontAlignY=35&desc=Plateforme%20E-commerce%20High-Tech%20%E2%80%94%20Architecture%20Headless&descAlignY=55&descSize=20"/>
 
-# ⚡ Electro-05
-### Plateforme E-commerce High-Tech – Architecture Headless
+<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Electric%20plug/3D/electric_plug_3d.png" width="110"/>
 
-![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=white)
-![Laravel](https://img.shields.io/badge/Laravel_12-FF2D20?logo=laravel&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL_8-4479A1?logo=mysql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis_7-DC382D?logo=redis&logoColor=white)
+<br/>
+
+<img src="https://readme-typing-svg.demolab.com/?lines=%E2%9A%A1+E-commerce+moderne%2C+performant+%26+scalable;%F0%9F%9B%92+Vente+Smartphones+%C2%B7+PC+%C2%B7+Gaming;%F0%9F%87%B2%F0%9F%87%A6+Cibl%C3%A9+march%C3%A9+marocain+(MAD%2FDH);%F0%9F%90%B3+9+conteneurs+Docker+orchestr%C3%A9s&font=Fira%20Code&center=true&width=700&height=45&color=61DAFB&vCenter=true&size=22&pause=1800"/>
+
+<br/><br/>
+
+![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=white&style=for-the-badge)
+![Laravel](https://img.shields.io/badge/Laravel_12-FF2D20?logo=laravel&logoColor=white&style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL_8-4479A1?logo=mysql&logoColor=white&style=for-the-badge)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge)
+![Redis](https://img.shields.io/badge/Redis_7-DC382D?logo=redis&logoColor=white&style=for-the-badge)
+
 ![Nginx](https://img.shields.io/badge/Nginx_1.25-009639?logo=nginx&logoColor=white)
 ![API](https://img.shields.io/badge/API-REST-green)
-![Status](https://img.shields.io/badge/Status-En%20développement-orange)
+![ThreeJS](https://img.shields.io/badge/Three.js-3D_Viewer-black?logo=three.js)
+![GSAP](https://img.shields.io/badge/GSAP-Animations-88CE02?logo=greensock&logoColor=white)
+![Status](https://img.shields.io/badge/Status-En%20développement-orange?style=flat&labelColor=black)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-🚀 **Application e-commerce moderne, performante et scalable**
-📱 Vente de produits électroniques (Smartphones, PC, Gaming…)
-🇲🇦 Ciblée pour le marché marocain (MAD/DH)
+<img src="https://raw.githubusercontent.com/Anmol-Baranwal/Cool-GIFs-For-GitHub/main/images/blue-black-cyberpunk.gif" width="100%">
 
 </div>
 
@@ -35,15 +41,6 @@
 8. [Authentification](#-authentification-multi-méthodes)
 9. [Modules Fonctionnels](#-modules-fonctionnels)
 10. [Diagrammes UML](#-diagrammes-uml)
-    - [Diagramme de Cas d'Utilisation](#-diagramme-de-cas-dutilisation-use-case)
-    - [Diagramme de Classes](#-diagramme-de-classes)
-    - [Séquence – Passer une Commande](#-diagramme-de-séquence--passer-une-commande)
-    - [Séquence – Authentification OTP](#-diagramme-de-séquence--authentification-otp)
-    - [Séquence – Dashboard Admin](#-diagramme-de-séquence--dashboard-admin)
-    - [Diagramme d'Activité](#-diagramme-dactivité--workflow-commande)
-    - [Diagramme de Composants](#-diagramme-de-composants)
-    - [Diagramme de Déploiement Docker](#-diagramme-de-déploiement-docker)
-    - [Diagramme Entité-Relation (ERD)](#-diagramme-entité-relation-erd)
 11. [Notifications Email](#-notifications-email)
 12. [Sécurité](#-sécurité)
 13. [Performance](#-performance)
@@ -57,14 +54,23 @@
 
 ## 🧠 Présentation du Projet
 
+<img align="right" width="260" src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Shopping%20cart/3D/shopping_cart_3d.png"/>
+
 **Electro-05** est une plateforme **E-commerce B2C** construite selon une **architecture Headless** avec conteneurisation **Docker** complète.
+
 Le frontend React est totalement découplé du backend Laravel, garantissant **performance, sécurité et évolutivité**.
 
-> 💡 Conçu pour le marché marocain, ce projet propose une expérience d'achat moderne en 4 langues (fr, en, ar, es) avec un système multi-vendeurs intégré.
+> 💡 Conçu pour le marché marocain, ce projet propose une expérience d'achat moderne en 4 langues (fr, en, ar, es) avec un système multi-vendeurs intégré et une **visionneuse 3D** des produits (Three.js).
+
+<br clear="right"/>
 
 ---
 
 ## ✨ Fonctionnalités Principales
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Sparkles/3D/sparkles_3d.png" width="70"/>
+</div>
 
 | Catégorie | Fonctionnalité |
 |-----------|---------------|
@@ -76,7 +82,7 @@ Le frontend React est totalement découplé du backend Laravel, garantissant **p
 | 🧑‍💼 **Admin** | Dashboard KPIs, graphiques, CRUD produits/catégories, exports CSV/XLSX |
 | 🤖 **Assistant** | Chatbot guide d'achat par questions/réponses |
 | 🌍 **i18n** | 4 langues (Français, English, العربية, Español) avec support RTL |
-| 🎨 **UI/UX** | Thème Dark/Light, animations GSAP, visionneuse 3D (Three.js) |
+| 🎨 **UI/UX** | Thème Dark/Light, animations GSAP, **visionneuse 3D (Three.js)** |
 | 🧩 **Multi-vendeurs** | Découpage automatique des commandes par vendeur |
 | 📧 **Emails** | 10+ templates transactionnels (OTP, confirmation, facture, contact…) |
 | 🐳 **Docker** | Déploiement automatisé avec 9 conteneurs orchestrés |
@@ -92,33 +98,34 @@ Le frontend React est totalement découplé du backend Laravel, garantissant **p
 ## 🏗️ Architecture Globale
 
 ```mermaid
+%%{init: {'theme':'dark', 'themeVariables': { 'primaryColor': '#61DAFB', 'edgeLabelBackground':'#1a1a2e', 'fontSize':'14px'}}}%%
 graph TB
     subgraph "Couche Presentation"
-        USER((Utilisateur))
+        USER((👤 Utilisateur))
     end
 
     subgraph "Reverse Proxy Docker"
-        NGINX[Nginx :8080 Reverse Proxy]
+        NGINX[🌐 Nginx :8080 Reverse Proxy]
     end
 
     subgraph "Frontend electro_frontend"
-        REACT[React 19 SPA :3000 Tailwind + GSAP + Three.js]
+        REACT[⚛️ React 19 SPA :3000 Tailwind + GSAP + Three.js]
     end
 
     subgraph "Backend electro_backend"
-        LARAVEL[Laravel 12 API :9000 PHP 8.2 FPM]
-        QUEUE[Queue Worker Redis Listener]
-        SCHED[Scheduler Taches planifiees]
+        LARAVEL[🔥 Laravel 12 API :9000 PHP 8.2 FPM]
+        QUEUE[📬 Queue Worker Redis Listener]
+        SCHED[⏱️ Scheduler Taches planifiees]
     end
 
     subgraph "Donnees"
-        MYSQL[(MySQL 8.0 20 plus tables)]
-        REDIS[(Redis 7 Cache + Queue)]
+        MYSQL[(🗄️ MySQL 8.0 20+ tables)]
+        REDIS[(⚡ Redis 7 Cache + Queue)]
     end
 
     subgraph "Dev Tools"
-        MAIL[Mailpit :8025 SMTP Dev]
-        PHPMY[phpMyAdmin :8888 BDD GUI]
+        MAIL[✉️ Mailpit :8025 SMTP Dev]
+        PHPMY[🛠️ phpMyAdmin :8888 BDD GUI]
     end
 
     USER -->|HTTP :8080| NGINX
@@ -139,6 +146,19 @@ graph TB
 ---
 
 ## ⚙️ Stack Technologique
+
+<div align="center">
+
+### 🎨 Frontend
+<img src="https://skillicons.dev/icons?i=react,tailwind,threejs,js&theme=dark" />
+
+### 🔧 Backend
+<img src="https://skillicons.dev/icons?i=laravel,php,mysql,redis&theme=dark" />
+
+### 🐳 Infrastructure
+<img src="https://skillicons.dev/icons?i=docker,nginx,git,github&theme=dark" />
+
+</div>
 
 ### 🎨 Frontend
 
@@ -186,74 +206,74 @@ graph TB
 
 ```
 05-Electro-profesionnels/
-|
-+-- README.md                     <- Ce fichier
-+-- Functional_Specification.md   <- Cahier des charges
-+-- PROJET_DOCUMENTATION.md       <- Documentation technique
-+-- Requete-SQL.txt               <- Requetes SQL utiles
-+-- .env                          <- Variables d environnement
-|
-+-- Back-end/                     <- API Laravel 12
-|   +-- app/
-|   |   +-- Http/
-|   |   |   +-- Controllers/      <- 16 controleurs REST
-|   |   |   |   +-- AuthController.php
-|   |   |   |   +-- ProductController.php
-|   |   |   |   +-- OrderController.php
-|   |   |   |   +-- CategoryController.php
-|   |   |   |   +-- DashboardController.php
-|   |   |   |   +-- ReviewController.php
-|   |   |   |   +-- WishlistController.php
-|   |   |   |   +-- ContactController.php
-|   |   |   |   +-- OtpController.php
-|   |   |   |   +-- MagicLinkController.php
-|   |   |   |   +-- GoogleAuthController.php
-|   |   |   |   +-- PaymentController.php
-|   |   |   |   +-- ReceiptController.php
-|   |   |   |   +-- InvoiceController.php
-|   |   |   |   +-- LocationController.php
-|   |   |   +-- Middleware/
-|   |   |       +-- AdminMiddleware.php
-|   |   |       +-- EmailVerifiedMiddleware.php
-|   |   |       +-- SetLocale.php
-|   |   +-- Models/               <- 13 modeles Eloquent
-|   |   +-- Mail/                 <- Classes Mailable
-|   |   +-- Observers/            <- ProductObserver
-|   |   +-- Exports/              <- Classes export
-|   +-- database/
-|   |   +-- migrations/           <- 20 migrations
-|   |   +-- seeders/              <- 9 seeders
-|   +-- resources/views/
-|   |   +-- emails/               <- 10 templates email Blade
-|   |   +-- pdf/                  <- Templates facture PDF
-|   +-- routes/
-|       +-- api.php               <- 50+ endpoints REST
-|       +-- web.php
-|
-+-- Frond-end/test/               <- React 19 SPA
-|   +-- src/
-|       +-- components/           <- Atoms / Molecules / Organisms
-|       +-- contexts/             <- 6 contextes React
-|       |   +-- AuthContext.jsx
-|       |   +-- CartContext.jsx
-|       |   +-- CompareContext.jsx
-|       |   +-- LanguageContext.jsx
-|       |   +-- ThemeContext.jsx
-|       |   +-- WishlistContext.jsx
-|       +-- pages/                <- 30 pages (public / client / admin)
-|       +-- services/             <- Couche API Axios
-|       +-- locales/              <- fr, en, ar, es (500+ cles)
-|       +-- layouts/              <- MainLayout, AdminLayout
-|
-+-- docker/                       <- Infrastructure complete
-    +-- docker-compose.yml
-    +-- docker-compose.override.yml
-    +-- docker-compose.prod.yml
-    +-- nginx/
-    +-- laravel/
-    +-- react/
-    +-- mysql/
-    +-- scripts/
+│
+├── README.md                     <- Ce fichier
+├── Functional_Specification.md   <- Cahier des charges
+├── PROJET_DOCUMENTATION.md       <- Documentation technique
+├── Requete-SQL.txt               <- Requetes SQL utiles
+├── .env                          <- Variables d'environnement
+│
+├── Back-end/                     <- API Laravel 12
+│   ├── app/
+│   │   ├── Http/
+│   │   │   ├── Controllers/      <- 16 controleurs REST
+│   │   │   │   ├── AuthController.php
+│   │   │   │   ├── ProductController.php
+│   │   │   │   ├── OrderController.php
+│   │   │   │   ├── CategoryController.php
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── ReviewController.php
+│   │   │   │   ├── WishlistController.php
+│   │   │   │   ├── ContactController.php
+│   │   │   │   ├── OtpController.php
+│   │   │   │   ├── MagicLinkController.php
+│   │   │   │   ├── GoogleAuthController.php
+│   │   │   │   ├── PaymentController.php
+│   │   │   │   ├── ReceiptController.php
+│   │   │   │   ├── InvoiceController.php
+│   │   │   │   └── LocationController.php
+│   │   │   └── Middleware/
+│   │   │       ├── AdminMiddleware.php
+│   │   │       ├── EmailVerifiedMiddleware.php
+│   │   │       └── SetLocale.php
+│   │   ├── Models/               <- 13 modeles Eloquent
+│   │   ├── Mail/                 <- Classes Mailable
+│   │   ├── Observers/            <- ProductObserver
+│   │   └── Exports/              <- Classes export
+│   ├── database/
+│   │   ├── migrations/           <- 20 migrations
+│   │   └── seeders/              <- 9 seeders
+│   ├── resources/views/
+│   │   ├── emails/               <- 10 templates email Blade
+│   │   └── pdf/                  <- Templates facture PDF
+│   └── routes/
+│       ├── api.php               <- 50+ endpoints REST
+│       └── web.php
+│
+├── Frond-end/test/               <- React 19 SPA
+│   └── src/
+│       ├── components/           <- Atoms / Molecules / Organisms
+│       ├── contexts/             <- 6 contextes React
+│       │   ├── AuthContext.jsx
+│       │   ├── CartContext.jsx
+│       │   ├── CompareContext.jsx
+│       │   ├── LanguageContext.jsx
+│       │   ├── ThemeContext.jsx
+│       │   └── WishlistContext.jsx
+│       ├── pages/                <- 30 pages (public / client / admin)
+│       ├── services/             <- Couche API Axios
+│       ├── locales/              <- fr, en, ar, es (500+ cles)
+│       └── layouts/              <- MainLayout, AdminLayout
+│
+└── docker/                       <- Infrastructure complete
+    ├── docker-compose.yml
+    ├── docker-compose.override.yml
+    ├── docker-compose.prod.yml
+    ├── nginx/
+    ├── laravel/
+    ├── react/
+    ├── mysql/
+    └── scripts/
 ```
 
 ---
@@ -377,15 +397,22 @@ graph TB
 
 ## 🧩 Modules Fonctionnels
 
-### Module 1 – Authentification & Utilisateurs
+<details>
+<summary><b>🔑 Module 1 – Authentification & Utilisateurs</b></summary>
+<br/>
+
 - Inscription avec email unique, mot de passe hashé Bcrypt
 - 4 méthodes de connexion (email, Google OAuth, Magic Link, OTP)
 - Vérification email obligatoire par OTP 6 chiffres valable 10 min
 - Reset mot de passe par OTP sécurisé
 - Gestion profil : nom, téléphone, ville, adresse, avatar
 - Administration utilisateurs (liste côté admin)
+</details>
 
-### Module 2 – Catalogue & Produits
+<details>
+<summary><b>🛍️ Module 2 – Catalogue & Produits</b></summary>
+<br/>
+
 - Navigation avec filtres : catégorie, prix, marque, état, promo, stock, featured
 - Pagination serveur : 12 produits/page
 - Arborescence catégories hiérarchique (3 niveaux, récursif)
@@ -393,16 +420,24 @@ graph TB
 - Comparateur de produits jusqu'à 3 produits (localStorage)
 - Avis & notes 1-5 étoiles avec modération admin, 1 avis/utilisateur/produit
 - Système multi-vendeurs avec sous-commandes automatiques
+</details>
 
-### Module 3 – Panier, Commande & Paiement
+<details>
+<summary><b>🛒 Module 3 – Panier, Commande & Paiement</b></summary>
+<br/>
+
 - Panier localStorage avec persistance, frais livraison 100 DH
 - Checkout guest ou authentifié avec adresse de livraison
 - Création commande : Order + OrderItems + SubOrders par vendeur + déduction stock
 - Paiement virtuel CB avec validation algorithme de Luhn
 - Reçu PDF téléchargeable via DomPDF + template Blade
 - Suivi commande par token sécurisé 64 caractères hexadécimaux (sans auth)
+</details>
 
-### Module 4 – Dashboard Administration
+<details>
+<summary><b>📊 Module 4 – Dashboard Administration</b></summary>
+<br/>
+
 - KPIs temps réel : commandes, revenus, produits, utilisateurs, avis
 - Graphiques : revenus 30 jours, répartition paiements, statuts commandes
 - Top 10 produits les plus vendus + top 10 villes clientes
@@ -410,21 +445,30 @@ graph TB
 - Modération avis clients (approbation/rejet)
 - Export CSV/XLSX produits et commandes
 - Logs d'activité admin journalisés avec IP
+</details>
 
-### Module 5 – Support Client
+<details>
+<summary><b>💬 Module 5 – Support Client</b></summary>
+<br/>
+
 - Formulaire de contact (rate limit 3/min, email admin + confirmation client)
 - Suivi commande sans authentification via token sécurisé
 - Assistant chatbot (questions → suggestions produits)
 - Carte interactive 8 localisations (3 agences + 5 points relais)
 - Bouton WhatsApp flottant
+</details>
 
-### Module 6 – Infrastructure & Déploiement
+<details>
+<summary><b>🐳 Module 6 – Infrastructure & Déploiement</b></summary>
+<br/>
+
 - 9 conteneurs Docker orchestrés (dev + prod)
 - Hot-reload dev avec bind mounts
 - SSL/HTTPS en production
 - Backup BDD automatisé (script Bash)
 - Healthchecks sur tous les services
 - Logs PHP-FPM + Nginx
+</details>
 
 ---
 
@@ -1440,19 +1484,29 @@ docker compose \
 
 ## 👨‍💻 Auteur
 
-**Zakaria Chamekh**
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Man%20technologist/3D/man_technologist_3d.png" width="90"/>
+
+### **Zakaria Chamekh**
+
 🎓 Développement Web & Applications
 💼 Full Stack Junior – React · Laravel · Docker
 
 📫 *Disponible pour stage / opportunité professionnelle*
-📧 chzakaria037@gmail.com
+
+[![Email](https://img.shields.io/badge/Email-chzakaria037%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:chzakaria037@gmail.com)
+
+</div>
 
 ---
 
 <div align="center">
 
-✨ *Electro-05 – Build once. Scale everywhere.* ✨
+### ✨ *Electro-05 – Build once. Scale everywhere.* ✨
 
 **React 19 · Laravel 12 · MySQL 8 · Redis 7 · Docker · Nginx**
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer"/>
 
 </div>
