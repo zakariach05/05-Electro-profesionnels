@@ -1,8 +1,7 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Electric%20plug/3D/electric_plug_3d.png" width="120"/>
+<img src="./Frond-end/test/public/logo-nv.png" width="120"/>
 
-# ⚡ Electro-05
 ### Plateforme E-commerce High-Tech – Architecture Headless
 
 ![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=white)
