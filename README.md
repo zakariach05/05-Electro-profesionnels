@@ -1,7 +1,7 @@
 <div align="center">
 
 
-<img src="./Frond-end/test/public/logo-nv.png" width="350"/>
+<img src="./Frond-end/test/public/logo-nv.png" width="450"/>
 
 ### Plateforme E-commerce High-Tech – Architecture Headless
 
@@ -17,7 +17,6 @@
 ![MySQL](https://img.shields.io/badge/MySQL_8-4479A1?logo=mysql&logoColor=white&style=for-the-badge)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge)
 ![Redis](https://img.shields.io/badge/Redis_7-DC382D?logo=redis&logoColor=white&style=for-the-badge)
->>>>>>> ac74cb9c8d99b8a632d210c96c06c8c1973f0598
 
 ![Nginx](https://img.shields.io/badge/Nginx_1.25-009639?logo=nginx&logoColor=white)
 ![API](https://img.shields.io/badge/API-REST-green)
